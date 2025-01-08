@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>数据库原理第二章 关系型数据库 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+            <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">数据库原理第二章 关系型数据库</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十二月 8, 2022&nbsp;&nbsp;12:18:57</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/">数据库系统原理</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>关系数据模型是E.F.Codd于1970年提出的一种<strong>概念模型</strong></p>
+<p>按照上一章介绍的，概念模型有三个要素：数据结构、数据操作，以及数据的完整性约束条件</p>
+<p>本章的前三部分就介绍了这三个部分，然后介绍了表示关系操作的一种数学方法：关系代数</p>
+<h2 id="关系数据结构及形式化定义"><a href="#关系数据结构及形式化定义" class="headerlink" title="关系数据结构及形式化定义"></a>关系数据结构及形式化定义</h2><h3 id="关系"><a href="#关系" class="headerlink" title="关系"></a>关系</h3><p>关系用来定义现实世界的实体、实体间的联系，也就是说<strong>RDB的数据结构是非常单一</strong>的，不仅实体是一种关系，联系也是一种关系。简单来说，关系是严格数学定义（集合论与关系代数）的表</p>
+<p>关系的<strong>逻辑结构</strong>被称为关系模式，既然关系是表，那么关系模式就是表头</p>
+<p>关于域、笛卡尔积、元组、分量、基数、度、关系、属性等简单概念就不再赘述</p>
+<h4 id="关系的一些关键概念"><a href="#关系的一些关键概念" class="headerlink" title="关系的一些关键概念"></a>关系的一些关键概念</h4><h5 id="各种码-键（key）"><a href="#各种码-键（key）" class="headerlink" title="各种码/键（key）"></a>各种码/键（key）</h5><p><strong>（超）码/键</strong>是可以唯一表示元组的属性组，可以<strong>最小唯一标识</strong>的属性组被称为<strong>候选码/键</strong>，在这些候选码/键中选择一个作为使用的标识即可，规定作为标识的称为<strong>主码/键</strong>。</p>
+<p>如果一个主码/键就是关系的<strong>整个属性组</strong>，那么被称为<strong>全码/键</strong></p>
+<p>候选码的属性被称为<strong>主属性</strong>，这一点需要注意，<strong>并不只有主码的属性才叫主属性</strong></p>
+<p>当一个实体<strong>引用</strong>了另一个实体的时候，需要将其<strong>主码</strong>作为自己的属性，被称为<strong>外码/键</strong></p>
+<h5 id="联系"><a href="#联系" class="headerlink" title="联系"></a>联系</h5><p>联系分为1:1，1:n，m:n三种类型，都可以用外键来表示，但是m:n关系很容易导致冗余的出现，因此需要单独拆分出来一个关系表示一对m:n联系</p>
+<h4 id="三类关系"><a href="#三类关系" class="headerlink" title="三类关系"></a>三类关系</h4><p>在RDB中，存在三类关系：</p>
+<ul>
+<li>基本关系（基本表）：也就是一张实际存在的表</li>
+<li>查询表：对于基本表查询以后的结果汇聚为一张表</li>
+<li>视图表：基本表或者其他试图表导出的虚表，没有实际的数据存储</li>
+</ul>
+<p>这些内容在后面都有更详细的解释</p>
+<h4 id="关系的性质"><a href="#关系的性质" class="headerlink" title="关系的性质"></a>关系的性质</h4><ul>
+<li>列同质：一个列的分量来自同一个域</li>
+<li>不同列可以出自同一个域</li>
+<li>列顺序可以交换</li>
+<li>元组候选码不能相同</li>
+<li>行顺序可以交换</li>
+<li>分量必须取原子值（1NF）</li>
+</ul>
+<h3 id="关系模式"><a href="#关系模式" class="headerlink" title="关系模式"></a>关系模式</h3><p>前面说过<strong>模式是实例的型</strong>，那么<strong>关系模式其实就是关系的型</strong>：关系模式相对稳定，关系是随时间变化的。当然，不那么严格的，有时候也会把关系模式成为关系，重点还是看上下文想表达的是这个型还是值</p>
+<p>关系模式可以表示为</p>
+<script type="math/tex; mode=display">
+R(U,D,DOM,F)</script><p>其中R表示关系名，D是属性名集合，DOM是属性向域的映射集合，F是属性之间数据依赖关系的集合</p>
+<p>不同的属性可能来自同一个域，也就是说U中的元素可能比D多，所以为了知道具体哪个属性出自哪个域，就需要DOM这个映射来表示</p>
+<p>一半来说，我们也可以简记为：</p>
+<script type="math/tex; mode=display">
+R(U)=R(A_1, A_2,...,A_n)</script><h3 id="关系数据库"><a href="#关系数据库" class="headerlink" title="关系数据库"></a>关系数据库</h3><p>所有关系的集合构成的数据库</p>
+<p>其型为关系数据库模式Schema，是对其的描述；值是某一时刻对应的关系的集合</p>
+<h3 id="关系模型的存储结构"><a href="#关系模型的存储结构" class="headerlink" title="关系模型的存储结构"></a>关系模型的存储结构</h3><p>这一段说的比较笼统，关于物理存储，若一个表对应一个文件，则由操作系统进行物理数据的组织；若一个表对应多个文件，就需要DBMS自己进行存储管理。</p>
+<h2 id="关系操作"><a href="#关系操作" class="headerlink" title="关系操作"></a>关系操作</h2><h3 id="基本关系操作"><a href="#基本关系操作" class="headerlink" title="基本关系操作"></a>基本关系操作</h3><p>基本关系操作按照是否改变了数据分为：查询、更新两类</p>
+<p>查询操作有：选择、投影、连接、除、并、差、交、笛卡尔积；其中选择、投影、并、差、笛卡尔积是5种基本操作</p>
+<p>也就是说，连接、除、交是导出操作。首先说连接，笛卡尔积可以导出连接，但是连接不能导出笛卡尔积，所以连接不算基本操作；除在后续会提到，这算是最复杂的关系操作了，所以也不算基本；交这个操作有点鸡肋，在选择的时候把筛选条件and起来就算是代替交了，所以也不是基本操作。</p>
+<p>更新操作有：插入、删除、修改</p>
+<p>关系操作采用<strong>一次一集合</strong>的方式，其对象与结果都是集合</p>
+<h3 id="关系数据库语言的分类"><a href="#关系数据库语言的分类" class="headerlink" title="关系数据库语言的分类"></a>关系数据库语言的分类</h3><ul>
+<li><strong>关系代数</strong>语言用的就是关系运算来表示查询要求，代表为ISBL</li>
+<li><strong>关系演算</strong>语言使用谓词表达，课程没有教授</li>
+<li><strong>结构化查询语言SQL</strong>则结合了两者的特点</li>
+</ul>
+<h2 id="关系完整性"><a href="#关系完整性" class="headerlink" title="关系完整性"></a>关系完整性</h2><p>关系的完整性约束分为：实体完整性、参照完整性、用户定义的完整性。前两者称为关系的<strong>两个不变性</strong></p>
+<h3 id="实体完整性"><a href="#实体完整性" class="headerlink" title="实体完整性"></a>实体完整性</h3><p>要求<strong>主属性</strong>非空（not NULL），因为主码唯一标识着实体，若主属性空，则说明实体不可区分。</p>
+<h3 id="参照完整性"><a href="#参照完整性" class="headerlink" title="参照完整性"></a>参照完整性</h3><p>倘若关系R通过外键F引用了关系S，那么F要么为S中某一个存在的元组的主码，要么为空</p>
+<p>也就是说，<strong>不允许引用不存在的实体</strong></p>
+<h3 id="用户定义的完整性"><a href="#用户定义的完整性" class="headerlink" title="用户定义的完整性"></a>用户定义的完整性</h3><p>与具体的语义有关，需要用户的理解</p>
+<h2 id="关系代数"><a href="#关系代数" class="headerlink" title="关系代数"></a>关系代数</h2><p>关系代数的运算对象和结果都是关系，分为：集合运算符（水平）、专门的关系运算符（行列都涉及）</p>
+<p><img src="/images/DBSNote/image-20221207230407140.png" alt="image-20221207230407140"></p>
+<h3 id="传统的集合运算"><a href="#传统的集合运算" class="headerlink" title="传统的集合运算"></a>传统的集合运算</h3><p>这部分比较容易理解，只需要确定两个关系要满足并相容（属性个数相同且所在的域一一对应）</p>
+<h3 id="专门的关系运算"><a href="#专门的关系运算" class="headerlink" title="专门的关系运算"></a>专门的关系运算</h3><h4 id="一些记号"><a href="#一些记号" class="headerlink" title="一些记号"></a>一些记号</h4><ul>
+<li>$t[A_i]$：元组$t$在属性$A_i$的分量</li>
+<li>$t[A]$：元组在属性组上的分量构成的子元组</li>
+<li>$Z_x$：象集，若有关系$R(X,Z)$，则$Z_x = { t[Z]|t\in R,t[X]=x}$</li>
+</ul>
+<h4 id="选择运算"><a href="#选择运算" class="headerlink" title="选择运算"></a>选择运算</h4><p>又叫限制Restriction，指选出符合条件的元组，记为：</p>
+<script type="math/tex; mode=display">
+\sigma _F (R) = \{t|t \in R \and F(t)=true\}</script><p>$F$是选择的条件，基本形式为$X_1\Theta Y_1$，其中$\Theta$为比较运算符，如果存在嵌套的话，优先级从高到低为：括号、比较、非、与、或</p>
+<h4 id="投影"><a href="#投影" class="headerlink" title="投影"></a>投影</h4><p>Projection，选出一部分属性列来，记为：</p>
+<script type="math/tex; mode=display">
+\pi _A (R) = \{t[A]|t \in R \}</script><h4 id="连接（-Theta-连接）"><a href="#连接（-Theta-连接）" class="headerlink" title="连接（$\Theta$连接）"></a>连接（$\Theta$连接）</h4><script type="math/tex; mode=display">
+R\underset{A\Theta B}\Join S = \{\overset{\frown}{t_r t_s}|t_r \in R \and t_s \in S \in t_r[A] \Theta t_s[B]\}</script><p>也就是在两个关系的笛卡尔积中选择满足关系$\Theta$的关系</p>
+<p><strong>等值连接：</strong>当$\Theta$为等号的时候，成为等值连接</p>
+<p><strong>自然连接：</strong>在<strong>同名</strong>属性组上做等值连接，在结果中会把两个属性合并</p>
+<p><strong>外连接：</strong></p>
+<p>​    <strong>悬浮元组：</strong>R、S做自然连接的时候，R中可能存在一些S中没有对应的元组，这些元组在连接的时候就被舍弃了。</p>
+<p>​    <strong>外连接：</strong>把悬浮元组保存在结果中，另一边赋值为NULL；若只保留左边关系的元组，就叫<strong>左外连接</strong>，反之叫<strong>右外连接</strong>。</p>
+<h4 id="除运算"><a href="#除运算" class="headerlink" title="除运算"></a>除运算</h4><p>设$R(X,Y)$，$S(Y,Z)$借助之前象集的定义，除运算定义为：</p>
+<script type="math/tex; mode=display">
+R\div S = \{t_r[X]| t_r \in R \and \pi _y (S)\in Y_x, x=t_r[X]\}</script><p>也就是说，在关系$R$中给定一个$x$，$x$对应的$y$值必须要能够包含$S$中出现的所有$y$值</p>
+<p>所以除法运算解决“查询…至少/全部的/所有的”这类问题很方便</p>
+<p>除运算也可以不用象集定义：</p>
+<script type="math/tex; mode=display">
+R\div S = \pi _x (R) - \pi_x((\pi_x(R)\times S)-R)</script><p>举一个简单的例子，即可表示除运算的方便之处：</p>
+<p>查询选修了所有课程的学生学号：$\pi<em>{Sno,Cno}(SC)\div \pi</em>{Cno}(Course)$</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>关系数据库是目前最常用的数据库系统，本章按照数据模型的三大要素对其进行了介绍。</p>
+<p>首先是关系数据结构，关系就是一张二维表，这也是关系数据库唯一的数据结构。具体而言，一个关系数据库中往往有三种表：基本表、查询表、试图表。</p>
+<p>关系模式则用来表示关系的结构，是关系的型。</p>
+<p>对于具体的物理存储，本章没有过多介绍，只说了可以一个基本表一个文件让OS管理、也可以建立多个文件让DBMS管理。</p>
+<p>关系操作有查询、更新两类：</p>
+<p>查询操作有：选择、投影、连接、除、并、差、交、笛卡尔积；其中选择、投影、并、差、笛卡尔积是5种基本操作</p>
+<p>更新操作有：插入、修改、删除</p>
+<p>描述关系操作的语言有：关系代数、关系演算、SQL。本章下面会重点讲解关系代数，SQL则会再后面单独开几章，关系演算则不在课程范围内。</p>
+<p>关系完整性包含：实体完整性、参照完整性、用户定义的完整性。前两者为关系的两个不变性。</p>
+<p>关系代数是一种以关系（集合）为对象和结果的关系操作表示方法，分为集合运算与关系运算。其中，关系运算主要包含了选择、投影、连接、除。连接的分类较多，包含$\Theta$连接、等值连接、自然连接、外连接等。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2022/12/08/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/">https://blog.boulevard.asia/2022/12/08/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"># 数据库</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/12/10/%E7%AC%AC%E4%B8%89%E7%AB%A0%20SQL/">数据库原理第三章 SQL</a>
+            
+            
+            <a class="next" rel="next" href="/2022/12/07/hexo%E5%8D%9A%E5%AE%A2latex%E6%94%AF%E6%8C%81%E6%95%99%E7%A8%8B/">LaTeX语法支持教程</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

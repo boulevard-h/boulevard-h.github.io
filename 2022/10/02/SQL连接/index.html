@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>SQL连接 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+            <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">SQL连接</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十月 2, 2022&nbsp;&nbsp;20:52:58</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8E%9F%E7%90%86/">数据库原理</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL前面的基本语法都还暂时还行，连接这块的东西稍微有点多，所以整理一下。算是复习前面关系代数的连接，也是熟悉一下MySQL语法。</p>
+<p>使用经典的S-T Schema当作例子吧，三个表如下：</p>
+<p>S-T.Student</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+</span></span><br><span class="line"><span class="operator">|</span> Sno       <span class="operator">|</span> Sname <span class="operator">|</span> Ssex <span class="operator">|</span> Sage <span class="operator">|</span> Sdept <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215123</span> <span class="operator">|</span> 王敏  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">18</span> <span class="operator">|</span> MA    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215125</span> <span class="operator">|</span> 张立  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> <span class="keyword">IS</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+</span></span><br></pre></td></tr></table></figure>
+<p>S-T.Course</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">+</span><span class="comment">-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> Sno       <span class="operator">|</span> Cno <span class="operator">|</span> Grade <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">1</span>   <span class="operator">|</span>    <span class="number">92</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">85</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">88</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">90</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">80</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----+-------+</span></span><br></pre></td></tr></table></figure>
+<p>S-T.sc</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">+</span><span class="comment">-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> Sno       <span class="operator">|</span> Cno <span class="operator">|</span> Grade <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">1</span>   <span class="operator">|</span>    <span class="number">92</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">85</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">88</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">90</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">80</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----+-------+</span></span><br></pre></td></tr></table></figure>
+<h2 id="笛卡尔积"><a href="#笛卡尔积" class="headerlink" title="笛卡尔积"></a>笛卡尔积</h2><p>执行语句<code>SELECT * FROM Student, SC;</code></p>
+<p>出现结果如下，也就是Student$\cdot$SC笛卡尔积。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> Sno       <span class="operator">|</span> Sname <span class="operator">|</span> Ssex <span class="operator">|</span> Sage <span class="operator">|</span> Sdept <span class="operator">|</span> Sno       <span class="operator">|</span> Cno <span class="operator">|</span> Grade <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215125</span> <span class="operator">|</span> 张立  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> <span class="keyword">IS</span>    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">1</span>   <span class="operator">|</span>    <span class="number">92</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215123</span> <span class="operator">|</span> 王敏  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">18</span> <span class="operator">|</span> MA    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">1</span>   <span class="operator">|</span>    <span class="number">92</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">1</span>   <span class="operator">|</span>    <span class="number">92</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">1</span>   <span class="operator">|</span>    <span class="number">92</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215125</span> <span class="operator">|</span> 张立  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> <span class="keyword">IS</span>    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">85</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215123</span> <span class="operator">|</span> 王敏  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">18</span> <span class="operator">|</span> MA    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">85</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">85</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">85</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215125</span> <span class="operator">|</span> 张立  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> <span class="keyword">IS</span>    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">88</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215123</span> <span class="operator">|</span> 王敏  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">18</span> <span class="operator">|</span> MA    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">88</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">88</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">88</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215125</span> <span class="operator">|</span> 张立  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> <span class="keyword">IS</span>    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">90</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215123</span> <span class="operator">|</span> 王敏  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">18</span> <span class="operator">|</span> MA    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">90</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">90</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">90</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215125</span> <span class="operator">|</span> 张立  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> <span class="keyword">IS</span>    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">80</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215123</span> <span class="operator">|</span> 王敏  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">18</span> <span class="operator">|</span> MA    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">80</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">80</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">80</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+-----+-------+</span></span><br></pre></td></tr></table></figure>
+<h2 id="等值连接与非等值连接"><a href="#等值连接与非等值连接" class="headerlink" title="等值连接与非等值连接"></a>等值连接与非等值连接</h2><h3 id="等值连接"><a href="#等值连接" class="headerlink" title="等值连接"></a>等值连接</h3><p>对于Sno进行等值连接<code>SELECT * FROM Student, SC WHERE Student.Sno=SC.Sno;</code></p>
+<p>结果如下</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> Sno       <span class="operator">|</span> Sname <span class="operator">|</span> Ssex <span class="operator">|</span> Sage <span class="operator">|</span> Sdept <span class="operator">|</span> Sno       <span class="operator">|</span> Cno <span class="operator">|</span> Grade <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">1</span>   <span class="operator">|</span>    <span class="number">92</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">85</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">88</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">90</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">80</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+-----+-------+</span></span><br></pre></td></tr></table></figure>
+<h4 id="自然连接"><a href="#自然连接" class="headerlink" title="自然连接"></a>自然连接</h4><p><code>SELECT * FROM Student NATURAL JOIN SC;</code></p>
+<p>结果相比上面的等值连接，只是把两个Sno列合并了</p>
+<h5 id="USING"><a href="#USING" class="headerlink" title="USING"></a>USING</h5><p>自然连接还可以用<code>USING(A1,...,An)</code>来规定需要使用的属性组。且这个时候可以省去<code>NATURAL</code>，直接使用<code>... JOIN ... USING(...)</code>来表达自然连接。</p>
+<h3 id="非等值连接"><a href="#非等值连接" class="headerlink" title="非等值连接"></a>非等值连接</h3><p>也是先笛卡尔积，后过滤，就不细说了。</p>
+<h2 id="过滤谓词"><a href="#过滤谓词" class="headerlink" title="过滤谓词"></a>过滤谓词</h2><p>连接以后，还可以在WHERE中加入其他条件，称为<strong>过滤谓词</strong>，如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> Student, SC <span class="keyword">WHERE</span> Student.Sno<span class="operator">=</span>SC.Sno <span class="keyword">AND</span> SC.Grade <span class="operator">&gt;</span> <span class="number">85</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> Sno       <span class="operator">|</span> Sname <span class="operator">|</span> Ssex <span class="operator">|</span> Sage <span class="operator">|</span> Sdept <span class="operator">|</span> Sno       <span class="operator">|</span> Cno <span class="operator">|</span> Grade <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+-----+-------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">1</span>   <span class="operator">|</span>    <span class="number">92</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span>    <span class="number">88</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">2</span>   <span class="operator">|</span>    <span class="number">90</span> <span class="operator">|</span></span><br></pre></td></tr></table></figure>
+<h2 id="自身连接"><a href="#自身连接" class="headerlink" title="自身连接"></a>自身连接</h2><p>特殊的连接，一定要给表取别名，要不然就分不清，如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">SELECT</span> FIRST.Cno, SECOND.Cpno <span class="keyword">FROM</span> Course <span class="keyword">FIRST</span>, Course <span class="keyword">SECOND</span> <span class="keyword">WHERE</span></span><br><span class="line">FIRST.Cpno <span class="operator">=</span> SECOND.Cno;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----+------+</span></span><br><span class="line"><span class="operator">|</span> Cno <span class="operator">|</span> Cpno <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----+------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">3</span>   <span class="operator">|</span> <span class="number">5</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1</span>   <span class="operator">|</span> <span class="number">7</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">4</span>   <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">7</span>   <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">5</span>   <span class="operator">|</span> <span class="number">6</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----+------+</span></span><br><span class="line"><span class="number">5</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.02</span> sec)</span><br></pre></td></tr></table></figure>
+<p>功能就是显示先修课的先修课（爷爷课是吧</p>
+<h3 id="自生连接的引用"><a href="#自生连接的引用" class="headerlink" title="自生连接的引用"></a>自生连接的引用</h3><p>e.g.1 查询薪水不同的任意两位：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> T1.Tname, T2.Tname</span><br><span class="line"><span class="keyword">From</span> Teacher T1, Teacher T2</span><br><span class="line"><span class="keyword">WHERE</span> T1.Salary <span class="operator">&gt;</span> T2.Salary;</span><br></pre></td></tr></table></figure>
+<p>注意这里用&gt;而不是≠，是为了防止出现(T1,T2)、(T2,T1)这种重复结果</p>
+<h2 id="外连接"><a href="#外连接" class="headerlink" title="外连接"></a>外连接</h2><p>这一块东西就比较乱了…</p>
+<p>外连接可以是基于<strong>ON</strong>子句的，ON中除了有等值条件以外<strong>还可以加入其他判断条件</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> Student <span class="keyword">LEFT</span> <span class="keyword">OUTER</span> <span class="keyword">JOIN</span> SC <span class="keyword">ON</span> (Student.Sno<span class="operator">=</span>SC.Sno);</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+------+-------+</span></span><br><span class="line"><span class="operator">|</span> Sno       <span class="operator">|</span> Sname <span class="operator">|</span> Ssex <span class="operator">|</span> Sage <span class="operator">|</span> Sdept <span class="operator">|</span> Sno       <span class="operator">|</span> Cno  <span class="operator">|</span> Grade <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+------+-------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">3</span>    <span class="operator">|</span>    <span class="number">88</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">2</span>    <span class="operator">|</span>    <span class="number">85</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> 李勇  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215121</span> <span class="operator">|</span> <span class="number">1</span>    <span class="operator">|</span>    <span class="number">92</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">3</span>    <span class="operator">|</span>    <span class="number">80</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> 刘晨  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> CS    <span class="operator">|</span> <span class="number">201215122</span> <span class="operator">|</span> <span class="number">2</span>    <span class="operator">|</span>    <span class="number">90</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215123</span> <span class="operator">|</span> 王敏  <span class="operator">|</span> 女   <span class="operator">|</span>   <span class="number">18</span> <span class="operator">|</span> MA    <span class="operator">|</span> <span class="keyword">NULL</span>      <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span>  <span class="keyword">NULL</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">201215125</span> <span class="operator">|</span> 张立  <span class="operator">|</span> 男   <span class="operator">|</span>   <span class="number">19</span> <span class="operator">|</span> <span class="keyword">IS</span>    <span class="operator">|</span> <span class="keyword">NULL</span>      <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span>  <span class="keyword">NULL</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-------+------+------+-------+-----------+------+-------+</span></span><br></pre></td></tr></table></figure>
+<p>当然也可以用自然连接关键字：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> Student <span class="keyword">NATURAL</span> <span class="keyword">LEFT</span> <span class="keyword">OUTER</span> <span class="keyword">JOIN</span> SC;</span><br></pre></td></tr></table></figure>
+<p>结果一样，只是自然连接合并了两个Sno。</p>
+<h3 id="关于外连接ON和WHERE的区别"><a href="#关于外连接ON和WHERE的区别" class="headerlink" title="关于外连接ON和WHERE的区别"></a>关于外连接ON和WHERE的区别</h3><p><strong>使用外连接的时候</strong></p>
+<p>WHERE可以看作是先建立连接，然后对于条件筛选；</p>
+<p>ON则是和JOIN一起执行的：ON对于左边表中的任何一个元组x，无论右边表中存不存在一个元组y使得(x, y)满足ON条件，都至少会返回一个x元组，即：即使不应该返回任何(x, y)，也应该返回一个(x, NULL)。</p>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><p>两个测试用的表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> TestTable1;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> size <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span>   <span class="number">10</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">2</span> <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">3</span> <span class="operator">|</span>   <span class="number">30</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+------+</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> TestTable2;</span><br><span class="line"><span class="operator">+</span><span class="comment">------+------+</span></span><br><span class="line"><span class="operator">|</span> size <span class="operator">|</span> name <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+------+</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">10</span> <span class="operator">|</span> AAA  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> BBB  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">30</span> <span class="operator">|</span> CCC  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+------+</span></span><br></pre></td></tr></table></figure>
+<p><strong>如果用WHERE的话：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> testtable1 <span class="keyword">left</span> <span class="keyword">join</span> testtable2 <span class="keyword">on</span> (testtable1.size <span class="operator">=</span> testtable2.size) <span class="keyword">where</span> testtable2.name<span class="operator">=</span><span class="string">&#x27;AAA&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+------+------+------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> size <span class="operator">|</span> size <span class="operator">|</span> name <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+------+------+------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span>   <span class="number">10</span> <span class="operator">|</span>   <span class="number">10</span> <span class="operator">|</span> AAA  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+------+------+------+</span></span><br></pre></td></tr></table></figure>
+<p><strong>而用ON的话：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> testtable1 <span class="keyword">left</span> <span class="keyword">join</span> testtable2 <span class="keyword">on</span> (testtable1.size <span class="operator">=</span> testtable2.size <span class="keyword">and</span> testtable2.name <span class="operator">=</span> &quot;AAA&quot;);</span><br><span class="line"><span class="operator">+</span><span class="comment">----+------+------+------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> size <span class="operator">|</span> size <span class="operator">|</span> name <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+------+------+------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span>   <span class="number">10</span> <span class="operator">|</span>   <span class="number">10</span> <span class="operator">|</span> AAA  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">2</span> <span class="operator">|</span>   <span class="number">20</span> <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">3</span> <span class="operator">|</span>   <span class="number">30</span> <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+------+------+------+</span></span><br></pre></td></tr></table></figure>
+<p><strong>但是对于INNER JOIN来说，自然是不存在一边为NULL的元组的，所以ON的结果和WHERE的结果就还是一样的，它们的区别仅限于在外连接。</strong></p>
+<h2 id="多表连接"><a href="#多表连接" class="headerlink" title="多表连接"></a>多表连接</h2><p>没啥好说的，上面会了这个就可以看作是多次连接再连接</p>
+<h2 id="关于SQL的连接类型："><a href="#关于SQL的连接类型：" class="headerlink" title="关于SQL的连接类型："></a>关于SQL的连接类型：</h2><p>SQL中有很多种连接</p>
+<ul>
+<li>INNER JOIN：内连接</li>
+<li>LEFT/RIGHT/FULL OUTER JOIN：三种外连接</li>
+<li>NATURAL JOIN：自然连接</li>
+<li>CROSS JOIN：笛卡尔积</li>
+<li>SELF JOIN：自链接</li>
+</ul>
+<p>同一种连接也有很多的表达方式，在使用tableA xxx join tableB时候，还可以使用using(Col1,…,Coln)来选择具体需要使用哪些公共属性来连接。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2022/10/02/SQL%E8%BF%9E%E6%8E%A5/">https://blog.boulevard.asia/2022/10/02/SQL%E8%BF%9E%E6%8E%A5/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8E%9F%E7%90%86/"># 数据库原理</a>
+                    
+                        <a href="/tags/mysql/"># mysql</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/10/03/hexo%E5%BB%BA%E7%AB%99%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD/">Hexo建站图片加载问题</a>
+            
+            
+            <a class="next" rel="next" href="/2022/09/23/LotKB%E5%9B%BA%E4%BB%B6%E6%95%99%E7%A8%8B/">LotLab固件编译教程</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>tailscale: 在你的远程设备之间搭建局域网 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">tailscale: 在你的远程设备之间搭建局域网</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">六月 18, 2024&nbsp;&nbsp;10:48:47</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E4%B8%8D%E5%8A%A1%E6%AD%A3%E4%B8%9A%E3%81%AE%E5%B0%8F%E7%8E%A9%E6%84%8F/">不务正业の小玩意</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>设想如何在外部远程连接你在校园网或实验室内网中的设备：</p>
+<ul>
+<li>采用 ToDesk 等远程桌面软件，缺点是卡、清晰度低、而且在 Linux 系统中的兼容性做的不是很好，容易崩溃。</li>
+<li>采用系统自带的远程软件如：SSH、RDP、VNC。</li>
+</ul>
+<p>后者的性能和稳定性更好，但是一般都是直接通过 <code>ip:port</code> 连接。而对于局域网（如校园网、实验室内网）内的设备，是没有公网 IP 的，只能在局域网的出口路由处做端口映射，比较麻烦。</p>
+<p>而已知解决办法是通过 FTP 进行内网穿透，将你的内网设备映射到一个外部 IP 例如 <code>your-id.ftp.com</code>，但是在很多学校中，这种内网直接映射公网 IP 的方法是非法的，有潜在的威胁。</p>
+<p>而本文介绍的 tailscale 则会在你的设备之间组件个人虚拟局域网，而不是直接把你的设备暴露在公网上，更加安全，且可以达到同样的效果。</p>
+<p>而要配置 tailscale，其实流程非常简单，在你的不同设备上安装 tailscale 软件，然后登陆同一个账号就可以互相访问了。但比较恶心的是这个软件非常难装，尤其是在 windows 上面。</p>
+<h2 id="Windows-安装"><a href="#Windows-安装" class="headerlink" title="Windows 安装"></a>Windows 安装</h2><p>当你访问 tailscale 官方下载页下载 Windows 安装包的时候，会下载一个几百 kb 的 exe 包来安装，这个安装过程非常缓慢，而且大概率进行到一半报错失败了。下面是一个成功率更高的解决办法：</p>
+<ol>
+<li>关闭防火墙&amp;杀毒软件，<strong>这个很重要！！！</strong></li>
+<li>在官方下载页下载 msi 安装包，大概有二十多 mb，可以有效防止 exe 包安装的时候下载到一半失败了。</li>
+</ol>
+<p>​        <a target="_blank" rel="noopener" href="https://pkgs.tailscale.com/stable/#windows">pkgs.tailscale.com/stable/#windows</a></p>
+<p>​        一般的 64 位 PC 下载 <code>tailscale-setup-x.y.z-amd64.msi</code> 即可。</p>
+<p>然后，从 msi 安装，打开软件登录即可。</p>
+<h2 id="Ubuntu-安装"><a href="#Ubuntu-安装" class="headerlink" title="Ubuntu 安装"></a>Ubuntu 安装</h2><p>官方给的安装方法也是运行一个脚本，然后和 windows 一样，脚本运行到一半容易因为网络问题报错。所以，直接下载其 deb 包安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://pkgs.tailscale.com/stable/ubuntu/pool/tailscale_x.y.z_amd64.deb</span><br><span class="line">sudo dpkt -i tailscale_x.y.z_amd64.deb</span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>都安装和登陆好以后，就可以互相 ping 同对方的虚拟地址了，然后就可以直接通过 IP 进行 SSH、VNC 等连接了。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2024/06/18/tailscale-%E5%9C%A8%E4%BD%A0%E7%9A%84%E8%BF%9C%E7%A8%8B%E8%AE%BE%E5%A4%87%E4%B9%8B%E9%97%B4%E6%90%AD%E5%BB%BA%E5%B1%80%E5%9F%9F%E7%BD%91/">https://blog.boulevard.asia/2024/06/18/tailscale-%E5%9C%A8%E4%BD%A0%E7%9A%84%E8%BF%9C%E7%A8%8B%E8%AE%BE%E5%A4%87%E4%B9%8B%E9%97%B4%E6%90%AD%E5%BB%BA%E5%B1%80%E5%9F%9F%E7%BD%91/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5/"># 远程连接</a>
+                    
+                        <a href="/tags/%E8%99%9A%E6%8B%9F%E5%B1%80%E5%9F%9F%E7%BD%91/"># 虚拟局域网</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/07/01/Linux-Network-1-SKB/">Linux Network 1: SKB</a>
+            
+            
+            <a class="next" rel="next" href="/2024/06/04/Ubuntu%E7%BC%96%E8%AF%91Linux6-8%E5%86%85%E6%A0%B8/">Ubuntu编译Linux6.8内核</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>Linux 电源键功能修改 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Linux 电源键功能修改</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">七月 5, 2024&nbsp;&nbsp;15:22:14</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E4%B8%8D%E5%8A%A1%E6%AD%A3%E4%B8%9A%E3%81%AE%E5%B0%8F%E7%8E%A9%E6%84%8F/">不务正业の小玩意</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>最近有远程办公的需求，而**的 ToDesk 在换了 6.8 Kernel 的 Ubuntu 上老崩溃，所以买了一个米家只能开关，在手机上操控开关。</p>
+<p>正常来说强制关机需要长按四五秒的样子，但是这个沟槽的开关只能短按，而不能长按。Ubuntu 20.04 LTS 的短按电源键是弹出一个询问窗口，等待 60s 以后才关机，非常的折磨。所以文本例举和尝试了网上的集中修改按下电源键反应的方法，最终找到了一种由于的方法。</p>
+<ol>
+<li><p>修改 systemd</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/systemd/system.conf</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">DefaultTimeoutStopSec=90s</span></span><br><span class="line">改为</span><br><span class="line">DefaultTimeoutStopSec=5s</span><br><span class="line"></span><br><span class="line">sudo systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+<ul>
+<li>经过测试，无效</li>
+</ul>
+</li>
+<li><p>修改 gnome settings 的 button-power</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gsettings set org.gnome.settings-daemon.plugins.power button-power &#x27;shutdown&#x27;</span><br><span class="line">或者还有人说</span><br><span class="line">gsettings set org.gnome.settings-daemon.plugins.power power-button-action &#x27;shutdown&#x27;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>尝试了两种方法都没有用，而且我的版本的 gnome 中 power-button-action 根本没有 ‘shutdown’ 这个值</li>
+</ul>
+</li>
+<li><p>修改 systemd-logind</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/systemd/logind.conf</span><br><span class="line"></span><br><span class="line">修改如下三行</span><br><span class="line">PowerKeyIgnoreInhibited=no</span><br><span class="line">HandlePowerKey=poweroff</span><br><span class="line">PowerKeyAction=poweroff</span><br><span class="line"></span><br><span class="line">sudo systemctl restart systemd-logind</span><br></pre></td></tr></table></figure>
+<ul>
+<li>无效，而且 restart systemd-logind 会重启电脑，吓我一跳</li>
+</ul>
+</li>
+<li><p>修改 ACPI</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/acpi/events/powerbtn</span><br><span class="line"></span><br><span class="line">添加</span><br><span class="line">event=button/power</span><br><span class="line">action=/sbin/shutdown -h now</span><br><span class="line"></span><br><span class="line">sudo systemctl restart acpid</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试有效，短按电源键直接关机</li>
+<li>如果你想重启的话，可以把 <code>action=/sbin/shutdown -h now</code> 改为 <code>action=/sbin/reboot</code></li>
+</ul>
+</li>
+</ol>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2024/07/05/Linux-%E7%94%B5%E6%BA%90%E9%94%AE%E5%8A%9F%E8%83%BD%E4%BF%AE%E6%94%B9/">https://blog.boulevard.asia/2024/07/05/Linux-%E7%94%B5%E6%BA%90%E9%94%AE%E5%8A%9F%E8%83%BD%E4%BF%AE%E6%94%B9/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E8%84%9A%E6%9C%AC/"># 脚本</a>
+                    
+                        <a href="/tags/Linux/"># Linux</a>
+                    
+                        <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/"># 自动化</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/08/06/Home-Mesh-1/">家庭Mesh组网（一）—— Mesh 介绍</a>
+            
+            
+            <a class="next" rel="next" href="/2024/07/01/Linux-Network-2-%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%A9%B1%E5%8A%A8%E6%94%B6%E5%8C%85/">Linux Network 2: 以太网驱动收包</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

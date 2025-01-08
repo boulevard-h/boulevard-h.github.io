@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>QMK编译+Vial在线改键功能 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">QMK编译+Vial在线改键功能</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十月 24, 2022&nbsp;&nbsp;8:14:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%AE%A2%E5%88%B6%E5%8C%96%E9%94%AE%E7%9B%98/">客制化键盘</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>QMK MSYS 0.18.0</p>
+<p>环境配置不再赘述，msys集成度较高，git clone不出问题基本上就不会出问题。</p>
+<h2 id="下载源码"><a href="#下载源码" class="headerlink" title="下载源码"></a>下载源码</h2><p><a target="_blank" rel="noopener" href="https://kbfirmware.com/">Keyboard Firmware Builder</a>，参考丈二、苏达等人教程，配置好PIN、MAP等，到COMPILE中下载第二项：Download.zip，即可下载源码。</p>
+<p><strong>但是要注意的是，在线固件网站的QMK版本很老，在0.18.0版本中编译不会通过，所以我们只在需要时复制其中的一些代码过去，整体模板并不适用。</strong></p>
+<h2 id="编写基本源码"><a href="#编写基本源码" class="headerlink" title="编写基本源码"></a>编写基本源码</h2><h3 id="QMK基本代码结构"><a href="#QMK基本代码结构" class="headerlink" title="QMK基本代码结构"></a>QMK基本代码结构</h3><p>QMK MSYS的工程默认放置于<code>C:/用户/用户名/qmk_firmware</code>/中，为了方便，记为<code>~</code></p>
+<p><code>~/.build/</code>中存放的是编译输出的固件，<code>~/keyboards/</code>中存储的是各种键盘的源码，主要在这个目录编写代码</p>
+<p>在<code>~/keyboards/键盘名/</code>文件夹中，是该键盘对应的源码，如果你的键盘有多版本的话，可以在文件夹下创建各个版本的文件夹<code>~/keyboards/键盘名/rev_x</code></p>
+<p>进入到qmk工程目录以后，使用<code>qmk compile -kb 键盘名[/rev_x]</code>，即可在keyboards中自动找到并编译</p>
+<p>在一个键盘基本的工程中，存在如下结构：</p>
+<blockquote>
+<p>│  键盘名.c<br>│  键盘名.h<br>│  config.h<br>│  rules.mk<br>│<br>└─keymaps<br>    ├─default<br>            keymap.c</p>
+</blockquote>
+<h2 id="基础文件内容编写"><a href="#基础文件内容编写" class="headerlink" title="基础文件内容编写"></a>基础文件内容编写</h2><h3 id="rules-mk"><a href="#rules-mk" class="headerlink" title="rules.mk"></a>rules.mk</h3><p>规定编译选项：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># MCU name</span></span><br><span class="line">MCU = atmega32u4</span><br><span class="line"></span><br><span class="line"><span class="comment"># Bootloader selection</span></span><br><span class="line">BOOTLOADER = atmel-dfu</span><br><span class="line"></span><br><span class="line"><span class="comment"># Build Options</span></span><br><span class="line"><span class="comment">#   change yes to no to disable</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">LTO_ENABLE = yes</span><br><span class="line">BOOTMAGIC_ENABLE = yes      <span class="comment"># Enable Bootmagic Lite</span></span><br><span class="line">EXTRAKEY_ENABLE = yes       <span class="comment"># Audio control and System control</span></span><br><span class="line">NKRO_ENABLE = yes           <span class="comment"># Enable N-Key Rollover</span></span><br><span class="line"></span><br><span class="line">MOUSEKEY_ENABLE = no        <span class="comment"># Mouse keys</span></span><br><span class="line">CONSOLE_ENABLE = no         <span class="comment"># Console for debug</span></span><br><span class="line">COMMAND_ENABLE = no         <span class="comment"># Commands for debug and configuration</span></span><br><span class="line">BACKLIGHT_ENABLE = no     <span class="comment"># Enable keyboard backlight functionality</span></span><br><span class="line">RGBLIGHT_ENABLE = no      <span class="comment"># Enable keyboard RGB underglow</span></span><br><span class="line">AUDIO_ENABLE = no           <span class="comment"># Audio output</span></span><br></pre></td></tr></table></figure>
+<p>最开始两个MCU和BL选项，本次使用的是最简单的32u4。</p>
+<p>LTO_ENABLE：压缩固件内容，编译时间稍微长一点，编译出来的固件内容小一点，一般开启。</p>
+<p>后面的具体每一个对应什么参见QMK官方文档。</p>
+<h3 id="config-h"><a href="#config-h" class="headerlink" title="config.h"></a>config.h</h3><p>规定键盘基本设置：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;config_common.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* USB Device descriptor parameter */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> VENDOR_ID       0xFEED</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PRODUCT_ID      0x6060</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DEVICE_VER      0x0001</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MANUFACTURER    boulevard</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PRODUCT         amx55</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* key matrix size */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MATRIX_ROWS 5</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MATRIX_COLS 12</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* key matrix pins */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MATRIX_ROW_PINS &#123; F0, F1, F4, F5, F6 &#125;</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MATRIX_COL_PINS &#123; C7, C6, D7, D6, D5, D4, D3, D2, D1, D0, B7, B6 &#125;</span></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* COL2ROW or ROW2COL */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DIODE_DIRECTION ROW2COL</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Set 0 if debouncing isn&#x27;t needed */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DEBOUNCE 5</span></span><br></pre></td></tr></table></figure>
+<p>第一二行，照抄</p>
+<p><strong>下面的几行就可以从下载的源码复制过来</strong>，具体定义如下：</p>
+<p>USB Device descriptor parameter：下面的五个Define是USB的ID和名字，自己设置就行</p>
+<p>key matrix size：矩阵的行列数</p>
+<p>key matrix pins：矩阵行、列引脚编号</p>
+<p>DIODE_DIRECTION：二极管方向，写反了会按键没反应。有时候键盘连接显示名称但是按键没反应可以看看这个有没有反。</p>
+<p>DEBOUNCE：消抖次数，一般设置为5就行</p>
+<h3 id="键盘名-h"><a href="#键盘名-h" class="headerlink" title="键盘名.h"></a>键盘名.h</h3><p>定义LAYOUT：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;quantum.h&quot;</span>  </span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LAYOUT( \</span></span><br><span class="line"><span class="meta">	K000, K001, K002, K003, K004, K005, K006, K007, K008, K009, K010, K011, \</span></span><br><span class="line"><span class="meta">	K100, K101, K102, K103, K104, K105, K106, K107, K108, K109, K110, K111, \</span></span><br><span class="line"><span class="meta">	K200, K201, K202, K203, K204, K205, K206, K207, K208, K209,       K211, \</span></span><br><span class="line"><span class="meta">	K300,       K302, K303, K304, K305, K306, K307, K308, K309, K310, K311, \</span></span><br><span class="line"><span class="meta">	K400, K401, K402,       K404,       K406,       K408, K409, K410, K411  \</span></span><br><span class="line"><span class="meta">) &#123; \</span></span><br><span class="line"><span class="meta">	&#123; K000,  K001,  K002,  K003,  K004,  K005,  K006,  K007,  K008,  K009,  K010,  K011 &#125;, \</span></span><br><span class="line"><span class="meta">	&#123; K100,  K101,  K102,  K103,  K104,  K105,  K106,  K107,  K108,  K109,  K110,  K111 &#125;, \</span></span><br><span class="line"><span class="meta">	&#123; K200,  K201,  K202,  K203,  K204,  K205,  K206,  K207,  K208,  K209,  KC_NO, K211 &#125;, \</span></span><br><span class="line"><span class="meta">	&#123; K300,  KC_NO, K302,  K303,  K304,  K305,  K306,  K307,  K308,  K309,  K310,  K311 &#125;, \</span></span><br><span class="line"><span class="meta">	&#123; K400,  K401,  K402,  KC_NO, K404,  KC_NO, K406,  KC_NO, K408,  K409,  K410,  K411 &#125;  \</span></span><br><span class="line"><span class="meta">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>上面两行任然照抄，下面的<code>#define LAYOUT()</code>内容也是从下载的源码复制。</p>
+<h3 id="键盘名-c"><a href="#键盘名-c" class="headerlink" title="键盘名.c"></a>键盘名.c</h3><p>只有一行，就是include一下上面的.h文件</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;amx55.h&quot;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="keymaps文件夹"><a href="#keymaps文件夹" class="headerlink" title="keymaps文件夹"></a>keymaps文件夹</h3><p>存放的是默认按键配列，下面可以放很多个文件夹，名称是配列名。编译的时候可以通过<code>-km 配列名</code>选择编译的配列。最简单的版本只需要有一个default文件夹，文件夹下面只需要一个：<code>keymap.c</code>文件，内容如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> QMK_KEYBOARD_H</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">uint16_t</span> PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = &#123;</span><br><span class="line"></span><br><span class="line">	[<span class="number">0</span>] = LAYOUT(</span><br><span class="line">		KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_SPC, </span><br><span class="line">		KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSLS, </span><br><span class="line">		KC_CAPS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_ENT, </span><br><span class="line">		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_LSFT, KC_UP, KC_DEL, </span><br><span class="line">		KC_LCTL, KC_LGUI, KC_LALT, KC_SPC, KC_SPC, MO(<span class="number">1</span>), KC_LEFT, KC_DOWN, KC_RGHT),</span><br><span class="line"></span><br><span class="line">	[<span class="number">1</span>] = LAYOUT(</span><br><span class="line">		KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, </span><br><span class="line">		KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LBRC, KC_RBRC, KC_TRNS, </span><br><span class="line">		KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_SCLN, KC_QUOT, KC_TRNS, </span><br><span class="line">		MO(<span class="number">2</span>), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_COMM, KC_DOT, KC_SLSH, MO(<span class="number">2</span>), KC_TRNS, KC_TRNS, </span><br><span class="line">		KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),</span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">	[<span class="number">2</span>] = LAYOUT(</span><br><span class="line">		KC_ESC, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, RESET, </span><br><span class="line">		KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, </span><br><span class="line">		KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, </span><br><span class="line">		KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, </span><br><span class="line">		KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>第一行的#include照抄，这个数组注意不能直接复制源码，和源码有所不同。</p>
+<p>首先写好</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">uint16_t</span> PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = &#123;</span><br><span class="line">    [<span class="number">0</span>] = LAYOUT(),</span><br><span class="line">    ...</span><br><span class="line">    [n] = LAYOUT(),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>默认配置有几层写几个LAYOUT就行，然后去下载的源码里边把LAYOUT复制过来。</p>
+<h2 id="编译固件"><a href="#编译固件" class="headerlink" title="编译固件"></a>编译固件</h2><p><code>qmk compile -kb 键盘名\[rev_x] -km keymap名</code></p>
+<p>编译成功以后刷入测试即可。</p>
+<p>注意有的时候会有一个什么backslash报错，需要在报错的文件最后加一个空行即可…</p>
+<h2 id="Vial配置"><a href="#Vial配置" class="headerlink" title="Vial配置"></a>Vial配置</h2><h3 id="via与vial介绍"><a href="#via与vial介绍" class="headerlink" title="via与vial介绍"></a>via与vial介绍</h3><p>via是客制化常用的改键方案了，老版的via需要下载软件、导入配置好的json文件。新版可以使用网页且不用导入json，但是暂时还不知道怎么写固件…</p>
+<p>vial有网页和软件两个方式，都不需要导入json，写好固件以后连接即可识别，且不需要保存，即改即存，功能似乎也比via完善。和不需要json的via版本一致，最大的缺点是把json需要的信息量存入到了键盘mcu的flash中，导致固件大很多，flash不是很大的mcu（比如又贵又拉的32u4）可能有点吃不消。</p>
+<h3 id="支持vial的qmk编译环境搭建"><a href="#支持vial的qmk编译环境搭建" class="headerlink" title="支持vial的qmk编译环境搭建"></a>支持vial的qmk编译环境搭建</h3><p>在qmk msys中输入命令：</p>
+<p><code>qmk setup -H 分支目录 -b vial vial-kb/vial-qmk</code></p>
+<p>分支目录是你vial版本qmk工程文件放置的目录，然后会开始git clone和setup，和最开始的qmk环境搭建基本一致</p>
+<p>然后cd到分支目录中，这个目录和qmk默认的工程目录几乎是一样的，把之前的keyboards中的键盘文件夹复制到这边，继续修改即可</p>
+<h3 id="支持vial的固件编写"><a href="#支持vial的固件编写" class="headerlink" title="支持vial的固件编写"></a>支持vial的固件编写</h3><p>在keymap中新建一个文件夹vial，把之前default中的keymap.c复制过去，然后还需要三个文件：</p>
+<p>config.h、rules.mk、vial.json</p>
+<p>下面介绍三个文件的配置</p>
+<h4 id="rules-mk-1"><a href="#rules-mk-1" class="headerlink" title="rules.mk"></a>rules.mk</h4><p>只有两行</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">VIA_ENABLE = yes</span><br><span class="line">VIAL_ENABLE = yes</span><br></pre></td></tr></table></figure>
+<h4 id="vial-json"><a href="#vial-json" class="headerlink" title="vial.json"></a>vial.json</h4><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;lighting&quot;</span><span class="punctuation">:</span> <span class="string">&quot;none&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;matrix&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;rows&quot;</span><span class="punctuation">:</span> <span class="number">5</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;cols&quot;</span><span class="punctuation">:</span> <span class="number">12</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;layouts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;keymap&quot;</span><span class="punctuation">:</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>lighting是灯光模式，方便在vial中设置灯光，我没有用灯，none</p>
+<p>matrix中写入行列数</p>
+<p>layouts中的keymap比较有趣，需要在常用的配列网站<a target="_blank" rel="noopener" href="http://www.keyboard-layout-editor.com/#/">Keyboard Layout Editor</a>中，使用自己的配列，把每个键上面的字改为:<code>row,col</code>，表示这个键所在的行列：</p>
+<p><img src="/images/QMK/image-20221024090736063.png" alt="image-20221024090736063"></p>
+<p>然后再&lt;/&gt; Raw data中到处json，这个json的内容复制到keymap后面去就行。</p>
+<h4 id="config-h-1"><a href="#config-h-1" class="headerlink" title="config.h"></a>config.h</h4><p>内容如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* SPDX-License-Identifier: GPL-2.0-or-later */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> VIAL_KEYBOARD_UID &#123;0xDA, 0xDB, 0x70, 0x9F, 0xE7, 0x18, 0x63, 0x55&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> VIAL_UNLOCK_COMBO_ROWS &#123; 0, 2 &#125;</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> VIAL_UNLOCK_COMBO_COLS &#123; 0, 11 &#125;</span></span><br></pre></td></tr></table></figure>
+<p>第一行，按惯例，照抄</p>
+<p>第二行，UID的配置，这个不能自己乱配，需要在工程目录下执行python脚本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python util/vial_generate_keyboard_uid.py</span><br></pre></td></tr></table></figure>
+<p>执行完成后会显示一个：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> VIAL_KEYBOARD_UID &#123;0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX&#125;</span></span><br></pre></td></tr></table></figure>
+<p>把生成的这个内容复制过去就行。</p>
+<p>第三四行，定义了两个键的组合：</p>
+<p>由于vial的权限比via高很多，可以执行一些危险操作，所以有的功能是被上锁的，执行这些功能之前，必须要按下两个固定的键解锁，这两行就是要设置这两个键。</p>
+<p>这两行的坐标是竖着看的，上面这个代码的意思就是按下(0,0)、(2,11)两个键可以解锁vial的危险功能。</p>
+<h3 id="支持vial的固件编译"><a href="#支持vial的固件编译" class="headerlink" title="支持vial的固件编译"></a>支持vial的固件编译</h3><p>仍然在vial分支的qmk工程目录下面执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qmk compile -kb 键盘名/[rev_x] -km vial</span><br></pre></td></tr></table></figure>
+<p>生成以后，刷入固件，访问网站<a target="_blank" rel="noopener" href="https://vial.rocks/">Vial Web</a>就可以在线改键。</p>
+<h3 id="进阶：Vial旋钮固件自定义"><a href="#进阶：Vial旋钮固件自定义" class="headerlink" title="进阶：Vial旋钮固件自定义"></a>进阶：Vial旋钮固件自定义</h3><h4 id="开启QMK编码器映射功能"><a href="#开启QMK编码器映射功能" class="headerlink" title="开启QMK编码器映射功能"></a>开启QMK编码器映射功能</h4><p>QMK旋钮固件有两种编写方式：编码器映射（Mapping）、回调（Callback）。Vial的目前版本只支持映射方式。</p>
+<p>首先需要在<code>rules.mk</code>中打开编码器映射：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ENCODER_ENABLE = yes</span><br><span class="line">ENCODER_MAP_ENABLE = yes</span><br></pre></td></tr></table></figure>
+<p>然后在<code>config.h</code>中配置旋钮引脚和解析度：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Encoder Setting */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ENCODERS_PAD_A &#123; A10 &#125;</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ENCODERS_PAD_B &#123; A8 &#125;</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ENCODER_RESOLUTION 4</span></span><br></pre></td></tr></table></figure>
+<p>再到<code>keymap.c</code>中支持开启编码器映射：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> defined(ENCODER_MAP_ENABLE)</span></span><br><span class="line"><span class="type">const</span> <span class="type">uint16_t</span> PROGMEM encoder_map[][NUM_ENCODERS][<span class="number">2</span>] = &#123;</span><br><span class="line">    [_HOME] =   &#123; ENCODER_CCW_CW(KC_1, KC_2) &#125;,</span><br><span class="line">    [_FN2] =  &#123; ENCODER_CCW_CW(KC_VOLD, KC_VOLU) &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>映射支持多层多旋钮，这里以两层（HOME、FN2）一个旋钮为例。</p>
+<p>到这里，就通过编码器映射方式启用了旋钮，功能应该是可以正常使用的。</p>
+<h4 id="开启Vial对于旋钮改键支持"><a href="#开启Vial对于旋钮改键支持" class="headerlink" title="开启Vial对于旋钮改键支持"></a>开启Vial对于旋钮改键支持</h4><p>到配列编辑网站加入两个按键，代表旋钮的两个方向，按键内容如下：</p>
+<p><img src="/images/QMK/image-20221112130821772.png" alt="image-20221112130821772"></p>
+<p>然后按照前面教程所说的，把这个网站生成的json复制到vial.json-&gt;layouts-&gt;keymap即可</p>
+<p>再次编译刷写，进入vial就可以看到了。</p>
+<h2 id="参考教程"><a href="#参考教程" class="headerlink" title="参考教程"></a>参考教程</h2><h3 id="手把手视频教学"><a href="#手把手视频教学" class="headerlink" title="手把手视频教学"></a>手把手视频教学</h3><p><strong>32u4主控PCB绘制，在线固件生成：</strong>B站/zf用户：丈二先生</p>
+<p> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ch411x7J2/?spm_id_from=333.788">【零基础】客制化键盘DIY系列教程（二）Keyboard Editor 编辑自己的配列~_哔哩哔哩_bilibili</a></p>
+<p><strong>qmk本地代码修改、编译：</strong>B站用户：HiryKun</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1pt4y1a7dG/?spm_id_from=333.880.my_history.page.click">【QMK教程】从配置编译环境到实现RBG矩阵灯效 OLED屏幕动画 旋钮编码器功能 VIA改键 ARM移植的详细大教学，看完就会写QMK固件_哔哩哔哩_bilibili</a></p>
+<p><strong>vial固件编写：</strong>B站用户：HiryKun</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ft4y1t7vx/?spm_id_from=333.999.0.0">【QMK教程】Vial的支持与配置，让你的键盘方便改键/改编码器/改灯效，无需选择JSON，比VIA更方便_哔哩哔哩_bilibili</a></p>
+<h3 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h3><p><strong>qmk官方文档：</strong><a target="_blank" rel="noopener" href="https://docs.qmk.fm/#/">QMK Firmware</a></p>
+<p><strong>vial官方文档：</strong><a target="_blank" rel="noopener" href="https://get.vial.today/">Home - Vial</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2022/10/24/QMK-VIAL/">https://blog.boulevard.asia/2022/10/24/QMK-VIAL/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E5%AE%A2%E5%88%B6%E5%8C%96%E9%94%AE%E7%9B%98/"># 客制化键盘</a>
+                    
+                        <a href="/tags/DIY/"># DIY</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/10/29/apm32-developer/">APM32键盘开发板の开发记录</a>
+            
+            
+            <a class="next" rel="next" href="/2022/10/07/SQL%E6%9F%A5%E8%AF%A2%E5%89%A9%E4%BD%99%E7%9A%84%E9%83%A8%E5%88%86/">SQL查询剩余的部分</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

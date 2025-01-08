@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>家庭Mesh组网（二）—— 家庭 Mesh 配置 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">家庭Mesh组网（二）—— 家庭 Mesh 配置</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">八月 7, 2024&nbsp;&nbsp;0:17:12</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E4%B8%8D%E5%8A%A1%E6%AD%A3%E4%B8%9A%E3%81%AE%E5%B0%8F%E7%8E%A9%E6%84%8F/">不务正业の小玩意</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="1-家庭网络拓扑分析"><a href="#1-家庭网络拓扑分析" class="headerlink" title="1. 家庭网络拓扑分析"></a>1. 家庭网络拓扑分析</h2><p>设备介绍：</p>
+<ul>
+<li>GS3202：移动送的光猫，配置较差，只有1口是千兆，2-4口是百兆</li>
+<li>RT-AC66U：老华硕路由器，暂时接在百兆口苟延残喘，只能给我的房间提供网络</li>
+<li>E2633：据说是中兴 AX3000 巡天的运营商定制版，可以和中兴设备组网</li>
+<li>IPTV：父母用的电视机顶盒</li>
+</ul>
+<p>需求主要两点：</p>
+<ul>
+<li>把老华硕路由换掉，并和 E2633 组网，因此需要换成中兴的路由器</li>
+<li>IPTV 可以正常使用</li>
+</ul>
+<p><img src="/images/Home-Mesh-2/image-20240807002546154.png" alt="image-20240807002546154" style="zoom: 50%;" /></p>
+<p>先介绍关于 IPTV 的内容：</p>
+<p>如果 IPTV 和路由器都放在客厅电视柜的话，需要两根从客厅到弱电箱的网线分别连接千兆口（一般是1口）与路由器，电视口（一般是2口）与IPTV。</p>
+<p>而之前家里装网络的电信师傅搞了一个很神奇的操作：把8芯的网线强行分成两个4芯，而4芯线的速度一般不到百兆，只能说操作非常难绷。</p>
+<p><img src="/images/Home-Mesh-2/image-20240807003538442.png" alt="image-20240807003538442" style="zoom:50%;" /></p>
+<p>而第一张图中移动的装法则是把 IPTV 连接到了 E2633 路由器的 LAN 口上，并且在路由器和光猫中进行了一些设置如下。</p>
+<p>超级管理员进入光猫后台可以看到 IPTV 业务的 VLAN ID 为 512，正常而言，绑定选项中的 LAN2 是勾选的，然后直接用 IPTV 机顶盒连接到光猫的 LAN2 就行。而这里用不到把它取消绑定了。</p>
+<p>在绑定配置中，将 VLAN 512 绑定至 LAN1，实现对连接 E2633 路由器和光猫网线的复用。</p>
+<p><img src="/images/Home-Mesh-2/image-20240807005057259.png" alt="image-20240807005057259" style="zoom:50%;" /></p>
+<p><img src="/images/Home-Mesh-2/image-20240807005332174.png" alt="image-20240807005332174"></p>
+<p>然后，在路由器中设置IPTV透传，这样就可以让 IPTV 机顶盒连接路由器 LAN1 来看电视。</p>
+<p><img src="/images/Home-Mesh-2/image-20240807090923306.png" alt="image-20240807090923306"></p>
+<p>然而，设置完成后打开 IPTV 却没有网络。</p>
+<p>经过排查，是路由器上网方式设置的问题导致的。光猫中，Internet 服务的模式是路由模式，并且带有 DHCP Server；而 IPTV 服务的模式是桥接模式，且不带有 DHCP Server。路由器设置的上网模式是桥接，对于 Internet 服务而言，光猫是路由模式，所以路由器是桥接模式不影响上网；而对于 IPTV 服务而言，光猫和路由都是桥接模式的话，自然就上不了网了，光猫和路由都不会分配 IP 地址和路由。</p>
+<p>因此，这里把路由器的上网模式从桥接改为 DHCP 就可以了。</p>
+<p><img src="/images/Home-Mesh-2/image-20240807010031313.png" alt="image-20240807010031313" style="zoom:50%;" /></p>
+<h2 id="2-方案选择"><a href="#2-方案选择" class="headerlink" title="2. 方案选择"></a>2. 方案选择</h2><p>由于客厅和卧室到弱电箱的网线都只有一根，所以最简单的方案是：AX3000晴天是一种<strong>壁挂式</strong>路由，作为主路由挂在弱电箱旁边，然后直接可以连接客厅和卧室的子路由。</p>
+<p>然而，经过多方咨询，了解到这种情况下 <strong>IPTV 只能接到主路由的 LAN 口</strong>，没有办法接到子路由的 LAN 口。因为如果 IPTV 要使用的话，主路由和子路由都要配置 IPTV 透传，那样主路由的 LAN1 口既要做 MESH，又要做 IPTV 透传，所以<strong>不可用！</strong></p>
+<p><img src="/images/Home-Mesh-2/image-20240807091416567.png" alt="image-20240807091416567" style="zoom:50%;" /></p>
+<p>而突发奇想的第二种方法是用旧华硕路由器关闭 WiFi 功能，或者是用软路由等，然后让两个中兴的路由器连接到上面做 AP Mesh。但是，同样也无法使用 IPTV。</p>
+<p><img src="/images/Home-Mesh-2/image-20240807091804810.png" alt="image-20240807091804810" style="zoom:50%;" /></p>
+<p>所以为了这个 IPTV，就只能使用最复杂的 VLAN 方案了，使用两个水星 GS105 pro 网管交换机。1口作为 trunk，复用传输数据；2 口划入 VLAN2，负责光猫和主路由 WAN 口连接；3 口划入 VLAN3，负责主路由 LAN 口和副路由 WAN 口连接；4 口划入 VLAN4，负责光猫 IPTV 口和 IPTV 机顶盒连接。</p>
+<p>注意这里我把 AX3000 巡天和 E2633 调换了位置，是因为标准版比定制版更适合作为主路由。</p>
+<p><img src="/images/Home-Mesh-2/image-20240807092605776.png" alt="image-20240807092605776"></p>
+<h2 id="3-Mesh-配置"><a href="#3-Mesh-配置" class="headerlink" title="3. Mesh 配置"></a>3. Mesh 配置</h2><p>首先，在弱电箱旁边不使用交换机直接按照：光猫 - 主路由 - 子路由的顺序测试组网，这个过程非常简单，把主路由接上网线通电以后，连接默认的 WiFi 进入设置网站设置 WiFi 名和密码等即可。</p>
+<p>然后在主路由的设置网页中关闭“自组网V2”选项，将子路由恢复默认设置（用牙签戳reset五秒以上，如果是全新的就不需要恢复了），然后把子路由的 WAN 接到主路由的 LAN，可以看到子路由闪灯，过一段时间等子路由灯绿了就是自动配置好 mesh 了，上到路由管理后台可以看到组网情况：</p>
+<p><img src="/images/Home-Mesh-2/image-20240808103924014.png" alt="image-20240808103924014" style="zoom: 80%;" /></p>
+<p>此时，说明两个路由器的组网功能是正常的，然后就把两个路由器分别放到客厅和卧室，然后配置 VLAN 交换机来单线复用。</p>
+<p>在拓扑中可以看到，两个交换机的端口对应是对称的，所以两个交换机的设置是一模一样的。</p>
+<p>首先，把交换机用网线接入到电脑上，交换机的默认配置地址是 192.168.0.1，所以将电脑有线网卡的 IP 设置为 192.168.0.x 网段，这里我设置为了 192.168.0.3：</p>
+<p><img src="/images/Home-Mesh-2/image-20240808100011860.png" alt="image-20240808100011860" style="zoom: 80%;" /></p>
+<p>然后，就可以在浏览器访问 192.168.0.1 来进入交换机的配置网页，然后输入交换机背面的默认账号密码登录。</p>
+<p>首先进入到 “VLAN - 801.2Q VLAN”，开启 “802.1Q VLAN使能” 并应用，然后配置各个端口的 VLAN。</p>
+<p>需要注意的是 trunk 端口（也就是复用多个 VLAN 的端口，这里是 1 号口）需要设置为 tagged，而只走一个 VLAN 的端口设置为 untagged，总体 VLAN 设置如下：</p>
+<p><img src="/images/Home-Mesh-2/image-20240808102554708.png" alt="image-20240808102554708" style="zoom: 80%;" /></p>
+<p>然后在 “VLAN - 802.1Q PVID设置” 中把三个 untagged 端口的 PVID 设置为对应的：</p>
+<p><img src="/images/Home-Mesh-2/image-20240808103118558.png" alt="image-20240808103118558"></p>
+<p>两台 VLAN 交换机保存退出以后，按照拓扑定义的方式接线，等待几十秒以后主路由和子路由都亮绿灯，组网成功。但是使用 VLAN4 的 IPTV 却没有正常工作，下面介绍 IPTV 的进一步配置方法。</p>
+<h2 id="4-IPTV-配置"><a href="#4-IPTV-配置" class="headerlink" title="4. IPTV 配置"></a>4. IPTV 配置</h2><p>IPTV 通过 VLAN4 在光猫的 2 号口和机顶盒之间传输数据，但是机顶盒并不能联网。</p>
+<p>在机顶盒上面检测，机顶盒到光猫的内网是通的，但是不能到外网。</p>
+<p>在 1. 中通过路由器透传配置 IPTV 的情况中，需要把路由器上网设置从桥接改为 DHCP 才能让 IPTV 机顶盒上网，这是因为光猫中 IPTV 设置的模式是桥接模式，需要内网的路由器进行路由和 IP 地址分配。在使用 VLAN 交换机复用的配置中也是类似的，光猫无法直接路由 IPTV 的数据，但是这里的 IPTV 机顶盒又没有接入到路由器 LAN 口，那么要怎么给其配置呢？答案是先配置交换机，把交换机加入到主路由的网络中，而 IPTV 机顶盒又连接在交换机上面，可以通过这个方式继续让路由器给 IPTV 路由。</p>
+<p>在交换机的 “系统管理 - IP设置” 中设置IP 和网络，由于主路由的 IP 是 192.168.5.1，所以把弱电箱交换机的 IP 设置为 192.168.5.252，客厅交换机的 IP 设置为 192.168.5.253，两者的默认网关都设置为主路由 192.168.5.1。</p>
+<p>而且这样一来，两个交换机加入了主路由的网络，无需用网线连接到交换机上面才能设置，而是直接连上 WiFi，访问上面的两个 IP 地址就能设置交换机。</p>
+<p>此外，在两个交换机的 “二层交换 - IGMP 侦听” 中，都把 IGMP 侦听关掉（IPTV 是基于 IGMP 组播实现的，至于为什么关闭侦听我也不是很清楚…）。</p>
+<p>然后重新尝试 IPTV 就可以正常使用了。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2024/08/07/Home-Mesh-2/">https://blog.boulevard.asia/2024/08/07/Home-Mesh-2/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E7%BD%91%E7%BB%9C/"># 网络</a>
+                    
+                        <a href="/tags/Mesh/"># Mesh</a>
+                    
+                        <a href="/tags/%E6%97%A0%E7%BA%BF/"># 无线</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/10/11/QMK-Low-Latency/">QMK 固件降低延迟</a>
+            
+            
+            <a class="next" rel="next" href="/2024/08/06/Home-Mesh-1/">家庭Mesh组网（一）—— Mesh 介绍</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

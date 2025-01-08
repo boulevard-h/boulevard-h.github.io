@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>APM32键盘开发板の开发记录 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">APM32键盘开发板の开发记录</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十月 29, 2022&nbsp;&nbsp;15:28:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%AE%A2%E5%88%B6%E5%8C%96%E9%94%AE%E7%9B%98/">客制化键盘</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="基本说明"><a href="#基本说明" class="headerlink" title="基本说明"></a>基本说明</h2><p>本开发板采用<code>apm32f103</code>系列的<code>c8t6</code>或<code>cbt6</code>主控，目的是作为一个QMK固件学习的廉价开发板，其基本情况：</p>
+<p>开发板外观如下</p>
+<p><img src="/images/apm32dvlp/8f71e3499f27e378391ac2a1cbdc555.jpg" alt="8f71e3499f27e378391ac2a1cbdc555"></p>
+<h3 id="关于主控"><a href="#关于主控" class="headerlink" title="关于主控"></a>关于主控</h3><p>主控方面，有四个选择：<code>stm32/apm32 f103 c8t6/cbt6</code></p>
+<p>apm32是stm32的国产版，软硬件都兼容，也就是说在设计电路和写固件的时候直接按stm32弄就行。</p>
+<p>c8t6和cbt6的区别主要是flash大小，也就是最大支持的固件大小，其中c8t6为<code>64k</code>、cbt6为<code>128k</code>，目前而言两者价格差别很小，所以建议选择后者。</p>
+<p>文章使用的是<code>apm32 f103 cbt6</code></p>
+<h3 id="关于电路设计"><a href="#关于电路设计" class="headerlink" title="关于电路设计"></a>关于电路设计</h3><p>电路分为两个部分，左边是apm32开发板，包含1个apm32键盘最小系统、9个按键、1个旋钮、2个插线母座。</p>
+<p>其中apm32开发板的硬件设计参考苏达酱的apm32最小系统板：</p>
+<p>b站教程：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1FV4y1K7mm/?spm_id_from=333.788&amp;vd_source=a42d90bcf7fcd7bedcf7188f6b5545c7">【苏达】还在用32u4？该换apm啦！apm主控键盘教程第一期（前期准备）_哔哩哔哩_bilibili</a></p>
+<p>立创开源工程：<a target="_blank" rel="noopener" href="https://oshwhub.com/nimrodlord/apm32-jian-pan-zui-xiao-ji-tong">apm32键盘最小系统 - 嘉立创EDA开源硬件平台 (oshwhub.com)</a></p>
+<p>在此基础上，添加了按键和旋钮，将一部分无用的引脚引出连接插线段子，便于后续功能开发。</p>
+<p>右边的usb hub部分基本与该开源工程一致<a target="_blank" rel="noopener" href="https://oshwhub.com/apana/usbhub">【已验证】USB拓展坞 USB集线器 USBHub - 嘉立创EDA开源硬件平台 (oshwhub.com)</a></p>
+<p>该项目只用了SL2.1A芯片，支持四个USB 2.1输入，本项目只是在其基础上，去掉了一个USB输入，将其换成了一个FFP连接器，然后在开发板的Type-C输出也接入到另一个FFP连接器上，可以通过一根FFP软排线将左侧的开发板接入到右侧的HUB。</p>
+<h3 id="关于固件"><a href="#关于固件" class="headerlink" title="关于固件"></a>关于固件</h3><p>基础固件参考了上述苏达的教程以及<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1pt4y1a7dG/?spm_id_from=333.880.my_history.page.click">【QMK教程】从配置编译环境到实现RBG矩阵灯效 OLED屏幕动画 旋钮编码器功能 VIA改键 ARM移植的详细大教学，看完就会写QMK固件_哔哩哔哩_bilibili</a>。</p>
+<p>基础固件与之前的博客<a target="_blank" rel="noopener" href="https://blog-boulevard.top/2022/10/24/qmk-vial/">QMK编译+Vial在线改键功能 | Boulevard’s Blog (blog-boulevard.top)</a>基本类似，只是更改了主控有关。</p>
+<h2 id="Bootloader烧录"><a href="#Bootloader烧录" class="headerlink" title="Bootloader烧录"></a>Bootloader烧录</h2><p>apm32出厂是不带dfu的，也就是说不能和Atmega32u4一样，焊接好板子以后连上USB即可使用qmk工具箱烧录。apm32和stm32都需要刷写好bootloader以后才能够用usb连接qmk工具箱烧录固件。</p>
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><ol>
+<li>烧录器：支持对Arm Cortex M3设备进行SWD接口烧录的烧录器，ST-Link、CMSIS-DAP即可。我使用的是猛龙电子的CMSIS-DAP v2。</li>
+<li>Keil5：软件方面，使用Keil进行烧录。Keil是常用的单片机开发软件，下载和安装都非常傻瓜。</li>
+</ol>
+<h3 id="Bootloader准备"><a href="#Bootloader准备" class="headerlink" title="Bootloader准备"></a>Bootloader准备</h3><p>使用苏达视频中提供的BL，不过需要注意的是，keil只支持hex文件，苏达群里的是bin文件，需要进行转换。</p>
+<h3 id="Keil配置"><a href="#Keil配置" class="headerlink" title="Keil配置"></a>Keil配置</h3><h4 id="下载Apm32设备包"><a href="#下载Apm32设备包" class="headerlink" title="下载Apm32设备包"></a>下载Apm32设备包</h4><p>在Keil官网的包下载页面<a target="_blank" rel="noopener" href="https://www.keil.com/dd2/pack/#!#eula-container">MDK5 Software Packs (keil.com)</a> &gt; APEXMIC &gt; APEX Microelectronics APM32F1软件包下载即可：</p>
+<p><img src="/images/apm32dvlp/image-20221029163444442.png" alt="image-20221029163444442"></p>
+<h4 id="导入包到Keil"><a href="#导入包到Keil" class="headerlink" title="导入包到Keil"></a>导入包到Keil</h4><p>打开Keil，打开Pack Installer</p>
+<p><img src="/images/apm32dvlp/1667032525749.png" alt="1667032525749"></p>
+<p>在Pack Installer菜单中找到File&gt;Import，找到上面下载的包导入即可</p>
+<h4 id="配置apm32烧录工程"><a href="#配置apm32烧录工程" class="headerlink" title="配置apm32烧录工程"></a>配置apm32烧录工程</h4><p>新建一个工程，将Bootloader的hex文件放置到工程文件夹中：</p>
+<p><img src="/images/apm32dvlp/image-20221029164114604.png" alt="image-20221029164114604"></p>
+<p>在Keil中，工程会有一个Target1：</p>
+<p><img src="/images/apm32dvlp/image-20221029164202675.png" alt="image-20221029164202675"></p>
+<p>右键第一个，设置：</p>
+<p>在Device中选择到对应的芯片</p>
+<p><img src="/images/apm32dvlp/image-20221029164235505.png" alt="image-20221029164235505"></p>
+<p>在Output中，把Name of Executable改为BL的hex文件：</p>
+<p><img src="/images/apm32dvlp/image-20221029164313095.png" alt="image-20221029164313095"></p>
+<p>再Device中选择你的烧录器，我这里选择CMSIS-DAP Debugger：</p>
+<p><img src="/images/apm32dvlp/image-20221029164424713.png" alt="image-20221029164424713"></p>
+<p>然后在烧录器右边的Settings中继续设置烧录器：</p>
+<p>在Debug中，选择你的CMSIS-DAP版本，这里我选择CMSIS-DAP v2；然后在Flash Download中设置如下，注意Programming Algorithm需要选择你芯片对应的，如果没有需要点Add加进来：</p>
+<p><img src="/images/apm32dvlp/image-20221029164602341.png" alt="image-20221029164602341"></p>
+<h3 id="烧录"><a href="#烧录" class="headerlink" title="烧录"></a>烧录</h3><p>在上述的Keil工程配置完毕以后，将烧录器连接好开发板的SWD接口，点击LOAD即可：</p>
+<p><img src="/images/apm32dvlp/image-20221029164735953.png" alt="image-20221029164735953"></p>
+<h3 id="固件烧录"><a href="#固件烧录" class="headerlink" title="固件烧录"></a>固件烧录</h3><p>在Bootloader烧录好以后，插上开发板的type-c，在<code>设备管理器&gt;通用串行总线设备</code>中会看到一个<code>Maple 003</code>的设备，就说明上面的BL烧录没有问题了。</p>
+<p>打开QMK Toolbox，可以看到设备已经被识别了，后续就可以和32u4一样，用QMK工具箱烧录QMK键盘固件了：</p>
+<p><img src="/images/apm32dvlp/image-20221029165051241.png" alt="image-20221029165051241"></p>
+<h2 id="固件开发过程"><a href="#固件开发过程" class="headerlink" title="固件开发过程"></a>固件开发过程</h2><h3 id="rev0"><a href="#rev0" class="headerlink" title="rev0"></a>rev0</h3><h4 id="版本说明"><a href="#版本说明" class="headerlink" title="版本说明"></a>版本说明</h4><p>rev0是一个<strong>最基础的验证MCU电路的版本，只验证了键盘功能</strong></p>
+<p>最基础的版本参考我的博客：<a target="_blank" rel="noopener" href="https://blog-boulevard.top/2022/10/24/qmk-vial/">QMK编译+Vial在线改键功能 | Boulevard’s Blog (blog-boulevard.top)</a></p>
+<p>下面只描写apm32版本与atmega32u4版本不同的地方</p>
+<h4 id="工程结构"><a href="#工程结构" class="headerlink" title="工程结构"></a>工程结构</h4><p><img src="/images/apm32dvlp/image-20221029165533531.png" alt="image-20221029165533531"></p>
+<p>工程结构如下，对比32u4版本，只多了<code>chconf.h</code>、<code>halconf.h</code>、<code>mcuconf.h</code>三个文件，下面一一说明每个文件修改之处。</p>
+<h4 id="keymap、键盘名-c、键盘名-h、config-h"><a href="#keymap、键盘名-c、键盘名-h、config-h" class="headerlink" title="keymap、键盘名.c、键盘名.h、config.h"></a>keymap、键盘名.c、键盘名.h、config.h</h4><p>这三个文件不变，和32u4完全一样</p>
+<h4 id="chconf-h"><a href="#chconf-h" class="headerlink" title="chconf.h"></a>chconf.h</h4><p>照抄就行，不知道干啥的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CH_CFG_ST_TIMEDELTA 0</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CH_CFG_USE_CONDVARS_TIMEOUT FALSE</span></span><br><span class="line"></span><br><span class="line">#include_next &lt;chconf.h&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="halconf-h"><a href="#halconf-h" class="headerlink" title="halconf.h"></a>halconf.h</h4><p>第一行和最后一行照抄，中间两行是启用SPI和PWM总线，普通的键盘功能可以不需要。后续可能需要修改，比如OLED需要使用I2C总线。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// #define HAL_USE_PWM TRUE</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// #define HAL_USE_SPI TRUE</span></span><br><span class="line"></span><br><span class="line">#include_next &lt;halconf.h&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="mcuconf-h"><a href="#mcuconf-h" class="headerlink" title="mcuconf.h"></a>mcuconf.h</h4><p>暂时也只需要照抄，需要和上面规定的总线对应。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line">#include_next &lt;mcuconf.h&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// #undef STM32_PWM_USE_TIM1</span></span><br><span class="line"><span class="comment">// #define STM32_PWM_USE_TIM1 TRUE</span></span><br></pre></td></tr></table></figure>
+<h4 id="rules-mk"><a href="#rules-mk" class="headerlink" title="rules.mk"></a>rules.mk</h4><p>MCU和BL类型改为STM32对应的，下面这些设置在上次的博客已经说明了，一样。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># MCU name</span></span><br><span class="line">MCU = STM32F103</span><br><span class="line"></span><br><span class="line"><span class="comment"># Bootloader selection</span></span><br><span class="line">BOOTLOADER = stm32duino</span><br><span class="line"></span><br><span class="line">LTO_ENABLE = yes</span><br><span class="line">BOOTMAGIC_ENABLE ?= yes	<span class="comment"># Virtual DIP switch configuration</span></span><br><span class="line">MOUSEKEY_ENABLE ?= no	<span class="comment"># Mouse keys</span></span><br><span class="line">EXTRAKEY_ENABLE ?= yes	<span class="comment"># Audio control and System control</span></span><br><span class="line">CONSOLE_ENABLE ?= no	<span class="comment"># Console for debug</span></span><br><span class="line">COMMAND_ENABLE ?= no    <span class="comment"># Commands for debug and configuration</span></span><br><span class="line">SLEEP_LED_ENABLE ?= no  <span class="comment"># Breathing sleep LED during USB suspend</span></span><br><span class="line">NKRO_ENABLE ?= yes	    <span class="comment"># USB Nkey Rollover</span></span><br><span class="line">BACKLIGHT_ENABLE ?= no</span><br><span class="line">RGBLIGHT_ENABLE ?= no</span><br></pre></td></tr></table></figure>
+<h4 id="问题备注"><a href="#问题备注" class="headerlink" title="问题备注"></a>问题备注</h4><p>功能比较简单，没有其他问题，但是reset键不是很灵，不知道是啥原因。所以<strong>在固件中为键盘设置一个reset的组合键</strong>，方便进入BL模式刷机。</p>
+<h3 id="rev0-5"><a href="#rev0-5" class="headerlink" title="rev0.5"></a>rev0.5</h3><h4 id="版本说明-1"><a href="#版本说明-1" class="headerlink" title="版本说明"></a>版本说明</h4><p>rev0.5是一个添加了旋钮的版本，旋钮还有一些问题没有提及</p>
+<h4 id="代码内容"><a href="#代码内容" class="headerlink" title="代码内容"></a>代码内容</h4><p>这里的代码是不支持vial的，若需要vial旋钮代码，请见博客<a target="_blank" rel="noopener" href="https://blog-boulevard.top/2022/10/24/qmk-vial/">QMK编译+Vial在线改键功能 | Boulevard’s Blog (blog-boulevard.top)</a>。</p>
+<p>添加旋钮需要修改如下内容</p>
+<ol>
+<li>在rules.mk中开启旋钮：</li>
+</ol>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ENCODER_ENABLE = yes</span><br></pre></td></tr></table></figure>
+<ol>
+<li>在config.h中设置旋钮：</li>
+</ol>
+<p>第一二行，显而易见是设置旋钮的A、B脚连接的MCU引脚。</p>
+<p>第三行设置的是ENCODER的分辨率（灵敏度），也就是编码器在每个止动之间记录的脉冲数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Encoder Setting */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ENCODERS_PAD_A &#123; A10 &#125;</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ENCODERS_PAD_B &#123; A8 &#125;</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ENCODER_RESOLUTION 4</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>在keymap.c中定义<code>encoder_update_user</code>：</li>
+</ol>
+<p>分别定义了顺时针，逆时针的键码。注意，如果键码是音量加减等功能，需要把<code>tap_code</code>改为<code>tap_code(KC_COLU, 10)</code>这样。同时需要在<code>rules.mk</code>里面开启<code>EXTRAKEY_ENABLE = yes</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> <span class="title function_">encoder_update_user</span><span class="params">(<span class="type">uint8_t</span> index, <span class="type">bool</span> clockwise)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (clockwise) &#123;</span><br><span class="line">        tap_code(KC_1);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        tap_code(KC_2);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="问题备注-1"><a href="#问题备注-1" class="headerlink" title="问题备注"></a>问题备注</h4><p>有一个很奇怪的BUG，在我的电路设计中，我将旋钮的上面两个脚当作轴体接到了ROW0, COL3，将下面的A、B脚接到了主控的B0, B1脚。然而在排除旋钮、固件本身问题的情况以后，无论是按下还是旋转都没有反应，将旋钮上面两个脚飞线到ROW0,COL0以后就可以触发这个键。</p>
+<p>在DEBUG很久以后，还是没有效果，于是我将另一个旋钮的A、B脚接到主控的A8、A9，C接地，其他不接。这个旋钮就可以正常工作了。</p>
+<p>目前还未找到原因，旋钮本身是可以用的。不知道是MCU这两个脚的原因还是电路设计的原因，有空再去排除。</p>
+<h5 id="2022·11·12更新"><a href="#2022·11·12更新" class="headerlink" title="2022·11·12更新"></a>2022·11·12更新</h5><p>除了把旋钮接到了A8A9，按下的两个脚也飞线到了轴座焊盘上面，仍然可以用</p>
+<h3 id="rev1"><a href="#rev1" class="headerlink" title="rev1"></a>rev1</h3><h4 id="版本说明-2"><a href="#版本说明-2" class="headerlink" title="版本说明"></a>版本说明</h4><p>rev1主要是写了OLED屏幕的demo，屏幕为128*32分辨率的SSD1306驱动OLED。</p>
+<h4 id="I2C基础"><a href="#I2C基础" class="headerlink" title="I2C基础"></a>I2C基础</h4><p>OLED屏幕需要<strong>开启I2C总线</strong>，下面简介一下I2C的一些基础知识。</p>
+<p>使用I2C的OLED屏幕有四个脚：VCC、GND、SCL(有的叫SCK，都是SClock的意思)、SDA。</p>
+<p>其中VCC理论上接入3.3V和5V都可以，但是为了避免烧掉，还是建议接3.3V。GND不必多说，接地。</p>
+<p>SCL和SPA是I2C的两个脚，直接连接到MCU，但是需要注意的是这两个脚不能够随便接，需要<strong>查阅主控说明书</strong>，查看其<strong>支持I2C的脚</strong>。</p>
+<p>一般而言，一个MCU可以有多对I2C的脚记为I2C1、I2C2…。<strong>对于APM32F103而言，我们使用其I2C1，其SCL为B6、SDA为B7</strong>。</p>
+<h4 id="代码内容-1"><a href="#代码内容-1" class="headerlink" title="代码内容"></a>代码内容</h4><h5 id="开启I2C"><a href="#开启I2C" class="headerlink" title="开启I2C"></a>开启I2C</h5><p>需要在与芯片相关的文件中开启I2C：</p>
+<p><code>chconf.h</code>不需要修改。</p>
+<p><code>halconf.h</code>需要开启I2C：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line">#include_next &lt;halconf.h&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> HAL_USE_I2C</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HAL_USE_I2C TRUE</span></span><br></pre></td></tr></table></figure>
+<p><code>mcuconf.h</code>则需要选择I2C使用I2C1这根：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line">#include_next &lt;mcuconf.h&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> STM32_I2C_USE_I2C1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> STM32_I2C_USE_I2C1 TRUE</span></span><br></pre></td></tr></table></figure>
+<h5 id="设置I2C参数，OLED参数"><a href="#设置I2C参数，OLED参数" class="headerlink" title="设置I2C参数，OLED参数"></a>设置I2C参数，OLED参数</h5><p>在<code>config.h</code>中加入如下：</p>
+<p>第一行，开启I2CD1。对应的还有I2CD2，这是I2C的两个版本v1、v2。其选择与主控型号有关，在qmk官方文档中给出了，常用的STM32 F1X F3X系列都是I2Cv1。</p>
+<p>后面四行，设置I2C1的时钟速率、第二个我也不知道、后面两个是I2C1的两个Pin，前面说了是B6/B7（注意别写反）</p>
+<p>最后五行，设置OLED的亮度，超时时间，滚动时间等显示参数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*OLED*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> I2C_DRIVER I2CD1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> I2C1_CLOCK_SPEED 400000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> I2C1_DUTY_CYCLE FAST_DUTY_CYCLE_2</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> I2C1_SCL_PIN B6</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> I2C1_SDA_PIN B7</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> OLED_BRIGHTNESS 255</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> OLED_TIMEOUT 80000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> OLED_FADE_OUT</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> OLED_FADE_OUT_INTERVAL 5</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> OLED_SCROLL_TIMEOUT 40000</span></span><br></pre></td></tr></table></figure>
+<h5 id="内容代码"><a href="#内容代码" class="headerlink" title="内容代码"></a>内容代码</h5><p>内容代码主要在keymap.c的函数<code>oled_task_user()</code>中：</p>
+<p>下面这个实例是官方给的显示文字的实例，内容比较简单，显示不出汉字。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> OLED_ENABLE</span></span><br><span class="line"><span class="type">bool</span> <span class="title function_">oled_task_user</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="comment">// Host Keyboard Layer Status</span></span><br><span class="line">    oled_write_P(PSTR(<span class="string">&quot;Layer: &quot;</span>), <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (get_highest_layer(layer_state)) &#123;</span><br><span class="line">        <span class="keyword">case</span> _HOME:</span><br><span class="line">            oled_write_P(PSTR(<span class="string">&quot;HOME\n&quot;</span>), <span class="literal">false</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> _FN2:</span><br><span class="line">            oled_write_P(PSTR(<span class="string">&quot;FN\n&quot;</span>), <span class="literal">false</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="comment">// Or use the write_ln shortcut over adding &#x27;\n&#x27; to the end of your string</span></span><br><span class="line">            oled_write_ln_P(PSTR(<span class="string">&quot;Undefined&quot;</span>), <span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Host Keyboard LED Status</span></span><br><span class="line">    <span class="type">led_t</span> led_state = host_keyboard_led_state();</span><br><span class="line">    oled_write_P(led_state.num_lock ? PSTR(<span class="string">&quot;NUM &quot;</span>) : PSTR(<span class="string">&quot;    &quot;</span>), <span class="literal">false</span>);</span><br><span class="line">    oled_write_P(led_state.caps_lock ? PSTR(<span class="string">&quot;CAP &quot;</span>) : PSTR(<span class="string">&quot;    &quot;</span>), <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    oled_write_P(PSTR(<span class="string">&quot;\n\nCCRzzz(- -)&quot;</span>), <span class="literal">false</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>下面这个是显示LOGO的示例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> <span class="title function_">oled_task_user</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">        <span class="type">static</span> <span class="type">const</span> <span class="type">char</span> PROGMEM qmk_logo[] = &#123;</span><br><span class="line">            <span class="number">0x80</span>, <span class="number">0x81</span>, <span class="number">0x82</span>, <span class="number">0x83</span>, <span class="number">0x84</span>, <span class="number">0x85</span>, <span class="number">0x86</span>, <span class="number">0x87</span>, <span class="number">0x88</span>, <span class="number">0x89</span>, <span class="number">0x8A</span>, 				<span class="number">0x8B</span>, <span class="number">0x8C</span>, <span class="number">0x8D</span>, <span class="number">0x8E</span>, <span class="number">0x8F</span>, <span class="number">0x90</span>, <span class="number">0x91</span>, <span class="number">0x92</span>, <span class="number">0x93</span>, <span class="number">0x94</span>,</span><br><span class="line">            <span class="number">0xA0</span>, <span class="number">0xA1</span>, <span class="number">0xA2</span>, <span class="number">0xA3</span>, <span class="number">0xA4</span>, <span class="number">0xA5</span>, <span class="number">0xA6</span>, <span class="number">0xA7</span>, <span class="number">0xA8</span>, <span class="number">0xA9</span>, <span class="number">0xAA</span>, 				<span class="number">0xAB</span>, <span class="number">0xAC</span>, <span class="number">0xAD</span>, <span class="number">0xAE</span>, <span class="number">0xAF</span>, <span class="number">0xB0</span>, <span class="number">0xB1</span>, <span class="number">0xB2</span>, <span class="number">0xB3</span>, <span class="number">0xB4</span>,</span><br><span class="line">            <span class="number">0xC0</span>, <span class="number">0xC1</span>, <span class="number">0xC2</span>, <span class="number">0xC3</span>, <span class="number">0xC4</span>, <span class="number">0xC5</span>, <span class="number">0xC6</span>, <span class="number">0xC7</span>, <span class="number">0xC8</span>, <span class="number">0xC9</span>, <span class="number">0xCA</span>, 				<span class="number">0xCB</span>, <span class="number">0xCC</span>, <span class="number">0xCD</span>, <span class="number">0xCE</span>, <span class="number">0xCF</span>, <span class="number">0xD0</span>, <span class="number">0xD1</span>, <span class="number">0xD2</span>, <span class="number">0xD3</span>, <span class="number">0xD4</span>, <span class="number">0x00</span></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    oled_write_P(qmk_logo, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同时，我们可以在keymap.c同级文件夹中定义一个.h文件，在其中定义多个render_xxx函数显示不同内容，然后在keymap.c中include这个文件并进行逻辑调用，如在默认层和FN层显示不同内容，调用不同函数等。</p>
+<h4 id="问题备注-2"><a href="#问题备注-2" class="headerlink" title="问题备注"></a>问题备注</h4><p>播放动画时，需要把每一帧都存到Flash中，再加上可能的Vial等功能，很容易导致固件大小超出B8T6的Flash大小（64k），但是却小于CBT6的Flash（128k）。</p>
+<p>但是我们在rules.mk定义MCU的时候，只填了<code>MCU = STM32F103</code>，并未标注MCU为什么版本，所以默认认为其是C8T6，导致固件超过64K的时候会报错。</p>
+<p>所以需要把C8T6改为CBT6：</p>
+<p>在qmk_firmware根目录中，有<code>builddefs</code>这个文件夹，点进去有很多mk文件，需要修改其中的两个：</p>
+<ol>
+<li>bootloader.mk</li>
+</ol>
+<p>找到这个文件的191行，把<code>x8</code>改为<code>xB</code></p>
+<p><img src="/images/apm32dvlp/image-20221101153707975.png" alt="image-20221101153707975"></p>
+<ol>
+<li>mcu_selection.mk</li>
+</ol>
+<p>找到这个文件的第278行，同样<code>x8</code>改为<code>xB</code></p>
+<p><img src="/images/apm32dvlp/image-20221101153800616.png" alt="image-20221101153800616"></p>
+<p>这样的话，固件超过64k而小于128k时就还是可以编译了。当然，由于C8和CB在其他地方时没有区别的，所以不会导致编译出来的小于64k的固件用在C8T6上有问题。</p>
+<h3 id="rev2"><a href="#rev2" class="headerlink" title="rev2"></a>rev2</h3><h4 id="版本说明-3"><a href="#版本说明-3" class="headerlink" title="版本说明"></a>版本说明</h4><p>该版本主要加入了电磁阀，下面说明其软硬件</p>
+<h4 id="外部电路说明"><a href="#外部电路说明" class="headerlink" title="外部电路说明"></a>外部电路说明</h4><p>不借助外部供电，能够用到的最大电压是5V1A的Type-C输出，很明显电流太小不够电磁阀用的，需要用三极管放大电流，这里我采用的是官方给出的TIP120达林顿晶体管。</p>
+<p>网上抄的一段原理，没学过模电的laymen真的看不懂了= =</p>
+<p><img src="/images/apm32dvlp/image-20221102102713479.png" alt="image-20221102102713479"></p>
+<p>QMK官方给的参考电路图<a target="_blank" rel="noopener" href="https://cdn-shop.adafruit.com/product-files/412/solenoid_driver.pdf">solenoid_driver (adafruit.com)</a>如下：</p>
+<p><img src="/images/apm32dvlp/image-20221102102128385.png" alt="image-20221102102128385"></p>
+<p>这里，Solenoid Power我们直接选用Type-C的5V电压，除此之外还需要一个TIP120达林顿晶体管（有人说IRF540也可以）、一个1N4004或1N4001或MUR340的整流二极管、一个1K或2.2K的电阻。</p>
+<p>其中TIP120的三级脚定义如下：</p>
+<p><img src="/images/apm32dvlp/image-20221102102937082.png" alt="image-20221102102937082"></p>
+<p>根据官方给出的电路，三个脚分别这样接：</p>
+<p><strong>B(Base级)：</strong>接一个1K/2.2K的电阻，然后接入到主控的一个脚（这里我用A15脚），电阻最终选的是1K。</p>
+<p><strong>C(Collector级)：</strong>接一个1N4001二极管（或上面提到的另外两个），二极管正极（没有杠的一边）接C级。二极管的负极（有杠的一边）接Type-C 5V供电。</p>
+<p><strong>E(Emitter级)：</strong>接地。</p>
+<p><strong>电磁阀：</strong>电磁阀的两根线分别接在1N4001二极管的两端即可。</p>
+<p>最终，焊接好的电路如下：</p>
+<p><img src="/images/apm32dvlp/image-20221102103601649.png" alt="image-20221102103601649"></p>
+<h4 id="代码编写"><a href="#代码编写" class="headerlink" title="代码编写"></a>代码编写</h4><p><code>rules.mk</code>中开启反馈、添加反馈为电磁阀SOLENOID:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HAPTIC_ENABLE = yes</span><br><span class="line">HAPTIC_DRIVER += SOLENOID</span><br></pre></td></tr></table></figure>
+<p>在<code>config.h</code>中加上电磁阀的引脚，使能，时间设置：</p>
+<p>最后一个参数是默认电磁阀的通电时间（单位：ms），我设置的100ms，效果不是很明显，但是不重要，后续可以设置按键自己加减电磁阀通电时间来控制效果。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SOLENOID_PIN A15</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SOLENOID_ACTIVE true</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SOLENOID_DEFAULT_DWELL 100</span></span><br></pre></td></tr></table></figure>
+<p>在keymap.c中可以添加电磁阀控制有关的键码，我主要使用了四个：</p>
+<p><code>HPT_TOG</code>：开关电磁阀</p>
+<p><code>HPT_FBK</code>：切换触发时机，可以有按下时触发、抬起时触发、按下抬起都触发。</p>
+<p><code>HPT_DWLI</code>：增加通电时间以增加反馈强度</p>
+<p><code>HPT_DWLD</code>：减少反馈强度</p>
+<h4 id="问题说明"><a href="#问题说明" class="headerlink" title="问题说明"></a>问题说明</h4><p>这里暂时是没有发现BUG的。</p>
+<p>主要的问题是TIP120这个晶体管太大了，而且只有插件型的不能SMT，导致PCB和生产会比较麻烦。</p>
+<p>所以目前想做的是寻找同样功能的贴片三极管、但是因为模电知识不够暂时找不到。</p>
+<h3 id="rev2-5"><a href="#rev2-5" class="headerlink" title="rev2.5"></a>rev2.5</h3><p>添加了<strong>有源</strong>蜂鸣器</p>
+<p><strong>关于有源无源蜂鸣器区别：</strong>有源指带有震荡源，加上电压就会响；无源指没有震荡源，需要加上一个震荡信号驱动。</p>
+<p>软件不需要变，和电磁阀的一样；硬件更简单，把蜂鸣器正级接到MCU，负极接地</p>
+<h3 id="rev3（最终版本）"><a href="#rev3（最终版本）" class="headerlink" title="rev3（最终版本）"></a>rev3（最终版本）</h3><h4 id="版本说明-4"><a href="#版本说明-4" class="headerlink" title="版本说明"></a>版本说明</h4><p>采用了ULN2003A驱动电磁阀，相比TIP120更小</p>
+<p>将与电磁阀共引脚的5v有源蜂鸣器换为使用AUDIO系统控制的无源压电蜂鸣器，单独使用A8引脚控制，做到了与电磁阀独立按键控制</p>
+<h4 id="硬件电路"><a href="#硬件电路" class="headerlink" title="硬件电路"></a>硬件电路</h4><h5 id="电磁阀"><a href="#电磁阀" class="headerlink" title="电磁阀"></a>电磁阀</h5><p>ULN2003A是一种贴片式达林顿晶体管阵列，是在参考有电磁阀的套件（m0110、Sodd65）时发现的，其资料如下</p>
+<p><img src="/images/apm32dvlp/v2-40761f2fc2d5e7df823236032800a417_r.jpg" alt="img"></p>
+<p>uln2003a集成了七个达林顿阵列，可以有七组独立的输入输出。当然，如果一对输入输出带来的电流增益太小，无法驱动你的设备的话，也可以进行串联，即：一个输入信号接入到几个IN脚，负载接到对应的几个out脚。</p>
+<p>网上的电路：</p>
+<p><img src="/images/apm32dvlp/2018041516285477" alt="img"></p>
+<p>按照电路，先用一对达林顿管，发现力度不是很够，电磁阀只有微弱的运动。</p>
+<p>于是一个一个并联尝试，增加到四对达林顿管并联的时候发现效果还可以了。</p>
+<h5 id="压电蜂鸣器"><a href="#压电蜂鸣器" class="headerlink" title="压电蜂鸣器"></a>压电蜂鸣器</h5><p>压电蜂鸣器比较简单，似乎不分正负极，一个接规定的输出引脚（推荐A8）、一个接地即可。</p>
+<h4 id="代码攥写"><a href="#代码攥写" class="headerlink" title="代码攥写"></a>代码攥写</h4><p>电磁阀方面，只是改变了外围电路，代码还是和之前一样。</p>
+<p>蜂鸣器方面，因为期望与电磁阀分开用按键控制，而之前选用的反馈功能是不支持的，所以在qmk官方文档中搜索buzzer关键字的时候，发现了除了反馈功能以外，音频功能（audio）也支持piezo buzzer（压电蜂鸣器）。</p>
+<p>于是就决定使用压电蜂鸣器，并开始攥写其代码。</p>
+<h5 id="DAC与PWM驱动"><a href="#DAC与PWM驱动" class="headerlink" title="DAC与PWM驱动"></a>DAC与PWM驱动</h5><p>压电式蜂鸣器也是一种无源蜂鸣器，需要使用模拟信号驱动，QMK官方给出的两种方式是DAC数模转换与PWM脉冲宽度调制。</p>
+<p>具体是什么不用理解（因为我也不会），只要知道我们需要这两种方式是让单片机输出模拟信号驱动蜂鸣器的方法即可。</p>
+<p>而qmk官方文档提到，stm32f1xx系列是不支持DAC的，所以我们可以选择的就只有PWM模式。</p>
+<p>PWM又分为软件PWM和硬件PWM，具体差别在哪我也没看懂，用硬件PWM就行。</p>
+<p>注意不是每一个脚都支持硬件PWM的，官方给出的是A8脚，我们也使用这个。如果一定要用其他脚的话，需要查看STM32/APM32的datasheet，寻找有TIMx_CHy表示的脚，这表示这个脚使用TIMER X、属于PWM CHANNEL Y。</p>
+<h5 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h5><p>首先需要根据<a target="_blank" rel="noopener" href="https://docs.qmk.fm/#/audio_driver?id=pwm-hardware">Audio Driver (qmk.fm)</a>开启PWM，设置TIM1,CHANNEL1（如果用的不是A8，这里需要对应修改）：</p>
+<p><code>halconf.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//halconf.h:</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HAL_USE_PWM                 TRUE</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HAL_USE_PAL                 TRUE</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HAL_USE_GPT                 TRUE</span></span><br><span class="line">#include_next &lt;halconf.h&gt;</span><br></pre></td></tr></table></figure>
+<p><code>mcuconf.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// mcuconf.h:</span></span><br><span class="line">#include_next &lt;mcuconf.h&gt;</span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> STM32_PWM_USE_TIM1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> STM32_PWM_USE_TIM1                  TRUE</span></span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> STM32_GPT_USE_TIM4</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> STM32_GPT_USE_TIM4                  TRUE</span></span><br></pre></td></tr></table></figure>
+<p><code>config.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//config.h:</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> AUDIO_PIN A8</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> AUDIO_PWM_DRIVER PWMD1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> AUDIO_PWM_CHANNEL 1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> AUDIO_STATE_TIMER GPTD4</span></span><br></pre></td></tr></table></figure>
+<p>然后到<code>rules.mk</code>开启AUDIO、设置驱动方式为pwm硬件：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AUDIO_ENABLE = yes</span><br><span class="line">AUDIO_DRIVER = pwm_hardware</span><br></pre></td></tr></table></figure>
+<p>最后，再到<code>config.h</code>加上一行<code>#define AUDIO_CLICKY</code></p>
+<p>AUDIO_CLICKY是指按键的时候发出声音，这正是我们需要的，同时，音频还有很多其他功能，甚至可以放8bit位宽的歌曲，这里就不细说，可以参见qmk官方文档（这个真的很重要）。</p>
+<p>添加几个关于AUDIO_CLICKY的按键：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// keymap.c:</span></span><br><span class="line"><span class="type">const</span> <span class="type">uint16_t</span> PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = &#123;</span><br><span class="line"></span><br><span class="line">	[_HOME] = LAYOUT(</span><br><span class="line">		KC_1, KC_2, KC_3,</span><br><span class="line">		KC_4, KC_5, KC_6, </span><br><span class="line">		KC_7, KC_8, MO(<span class="number">1</span>)),</span><br><span class="line"></span><br><span class="line">    [_FN2] = LAYOUT(</span><br><span class="line">		CLICKY_TOGGLE, HPT_TOG, QK_BOOT,</span><br><span class="line">		HPT_FBK, CLICKY_UP, CLICKY_DOWN,  </span><br><span class="line">		HPT_DWLI, HPT_DWLD, KC_9),</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>CLICKY_TOGGLE</code>：开关按键声音，这个和旁边的<code>HPT_TOG</code>分开了，自然也就可以独立控制属于AUDIO模块的蜂鸣器和属于Haptic Feedback模块的电磁阀了</p>
+<p><code>CLICKY_UP</code>：按键时蜂鸣器声音频率+，也就是调整PWM波形的频率来提高音调</p>
+<p><code>CLICKY_DOWN</code>：与上一个相反</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2022/10/29/apm32-developer/">https://blog.boulevard.asia/2022/10/29/apm32-developer/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E7%AE%80%E6%98%93%E6%95%99%E7%A8%8B/"># 简易教程</a>
+                    
+                        <a href="/tags/%E5%AE%A2%E5%88%B6%E5%8C%96%E9%94%AE%E7%9B%98/"># 客制化键盘</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/11/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AE%9E%E9%AA%8C%E4%BA%8C/">区块链实验二</a>
+            
+            
+            <a class="next" rel="next" href="/2022/10/24/QMK-VIAL/">QMK编译+Vial在线改键功能</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

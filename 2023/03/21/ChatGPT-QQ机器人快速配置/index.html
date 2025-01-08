@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>ChatGPT QQ机器人快速配置 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">ChatGPT QQ机器人快速配置</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">三月 21, 2023&nbsp;&nbsp;14:56:51</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E4%B8%8D%E5%8A%A1%E6%AD%A3%E4%B8%9A%E3%81%AE%E5%B0%8F%E7%8E%A9%E6%84%8F/">不务正业の小玩意</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="准备工具"><a href="#准备工具" class="headerlink" title="准备工具"></a>准备工具</h2><ol>
+<li><p>ChatGPT-mirai-QQ-bot</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/lss233/chatgpt-mirai-qq-bot">GitHub - lss233/chatgpt-mirai-qq-bot: 🚀 一键部署！真正的 ChatGPT QQ 聊天机器人！支持ChatGPT API、 ChatGPT Plus、新版 Bing，多账号负载均衡，人设调教，敏感词检测，虚拟女仆、对话上下文，图片渲染，代理加速 (内有视频教程）</a></p>
+<p>在GitHub下载最新Release压缩包即可</p>
+</li>
+<li><p>手机滑块验证码工具</p>
+<p><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1Ij-CCHgY7S16cZo584RvsA">https://pan.baidu.com/s/1Ij-CCHgY7S16cZo584RvsA</a> </p>
+<p>提取码：7qjk</p>
+</li>
+</ol>
+<h2 id="配置思路"><a href="#配置思路" class="headerlink" title="配置思路"></a>配置思路</h2><p>本项目由mirai和chatgpt两个模块组成，mirai负责与QQ通信，将信息转发到chatpgt，然后把chatgpt的回复发送到QQ</p>
+<p>只要在两个模块上分别登录好QQ和ChatGPT账户即可</p>
+<h2 id="配置过程"><a href="#配置过程" class="headerlink" title="配置过程"></a>配置过程</h2><h3 id="初始化-amp-配置ChatGPT账户"><a href="#初始化-amp-配置ChatGPT账户" class="headerlink" title="初始化&amp;配置ChatGPT账户"></a>初始化&amp;配置ChatGPT账户</h3><p>解压缩安装包，会有一个<code>初始化.bat脚本</code>，直接运行，完毕以后会弹出一个cfg配置文件，在其中配置ChatGPT账户：</p>
+<ul>
+<li>配置QQ号</li>
+</ul>
+<p><img src="/images/ChatGPT-Mirai/image-20230322163044228.png" alt="image-20230322163044228"></p>
+<ul>
+<li>配置梯子<img src="/images/ChatGPT-Mirai/image-20230322163126537.png" alt="image-20230322163126537"></li>
+<li>配置OpenAI API密钥<img src="/images/ChatGPT-Mirai/image-20230322163141324.png" alt="image-20230322163141324"></li>
+</ul>
+<p>当然，提供了很多的OpenAI登陆账号，这里选择除了贵没有缺点的API方式（反正有免费额度</p>
+<h3 id="配置Mirai"><a href="#配置Mirai" class="headerlink" title="配置Mirai"></a>配置Mirai</h3><p>这玩意配置bug很多，出问题了建议多上GitHub看看issue（毕竟是“非法”登陆腾讯的东西^ ^</p>
+<p>点击<code>启动Mirai.bat</code>，然后等待Mirai初始化完成，输入</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Login qq号 qq密码 设备类型</span><br></pre></td></tr></table></figure>
+<p>设备类型等于是模拟在什么设备上面登录，一开始选择的是ANDROID_WATCH也就是安卓手表，出现了error，查询了<a target="_blank" rel="noopener" href="https://mirai.mamoe.net/topic/223/无法登录的临时处理方案?lang=zh-CN">Mirai官方的解决方案</a>，把设备改为了MACOS就行了</p>
+<p>然后，如果是第一次登陆的话，会要进行验证，如下图所示：</p>
+<p><img src="/images/ChatGPT-Mirai/image-20230322163737380.png" alt="image-20230322163737380"></p>
+<p>复制这个captcha链接，在滑动验证码app中输入并完成验证：</p>
+<p><img src="/images/ChatGPT-Mirai/image-20230322163809239.png" alt="image-20230322163809239"></p>
+<p>会得到一串TX值，赋值TX值，直接输入到Mirai终端就可以完成登录</p>
+<h3 id="启动ChatGPT"><a href="#启动ChatGPT" class="headerlink" title="启动ChatGPT"></a>启动ChatGPT</h3><p>然后点击<code>启动ChatGPT.bat</code>，如下图就是登陆成功：</p>
+<p><img src="/images/ChatGPT-Mirai/image-20230322163918590.png" alt="image-20230322163918590"></p>
+<p>到私聊或者到群里@进行对话测试</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2023/03/21/ChatGPT-QQ%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%BF%AB%E9%80%9F%E9%85%8D%E7%BD%AE/">https://blog.boulevard.asia/2023/03/21/ChatGPT-QQ%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%BF%AB%E9%80%9F%E9%85%8D%E7%BD%AE/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/ChatGPT/"># ChatGPT</a>
+                    
+                        <a href="/tags/%E8%84%9A%E6%9C%AC/"># 脚本</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/03/22/WSL2%E9%85%8D%E7%BD%AESSH%E5%B1%80%E5%9F%9F%E7%BD%91%E8%AE%BF%E9%97%AE/">WSL2配置SSH局域网访问</a>
+            
+            
+            <a class="next" rel="next" href="/2023/03/21/cplusplus/">蓝桥网课C++进阶实验</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

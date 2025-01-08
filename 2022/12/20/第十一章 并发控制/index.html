@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>数据库原理第十一章 并发控制 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">数据库原理第十一章 并发控制</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十二月 20, 2022&nbsp;&nbsp;18:08:55</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/">数据库系统原理</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>（终于写完了= =</p>
+<p>数据库中可能有多个用户同时执行事务，为了保证这些事务不会互相影响，需要进行并发控制来保障数据的<strong>一致性和隔离性</strong>。</p>
+<p>数据库对于多个事务的执行又如下方式：</p>
+<ol>
+<li>串行执行：T1-&gt;T2-&gt;…，一个一个排队完成</li>
+<li>交叉并发：在事务间来回切换</li>
+<li>同时并发：多处理机系统，真正的并发</li>
+</ol>
+<p>在本章中，1作为我们的判断标杆，是个并发处理策略是否是合格的需要看其结果是否能与某种串行执行一致。2是我们主要的讨论情况。</p>
+<h2 id="并发控制概述"><a href="#并发控制概述" class="headerlink" title="并发控制概述"></a>并发控制概述</h2><p>下面三类并发操作可能导致数据的不一致性：</p>
+<ul>
+<li><p>丢失修改：两个事务同时写入一个数据，导致先写入的这个结果丢失</p>
+<p><img src="/images/oneplusnameless/image-20221220103455549.png" alt="image-20221220103455549"></p>
+</li>
+<li><p>不可重复读：T1读取数据以后，T2更新数据，导致T1无法再现前一次结果</p>
+<p>具体根据<strong>T2更新的类型</strong>又分为三种情况：</p>
+<ul>
+<li>T1读-&gt;T2<strong>修改</strong>-&gt;T1再次读，得到了不一样的值</li>
+<li>T1读-&gt;T2<strong>删除</strong>-&gt;T1再次读，读不到某些数据</li>
+<li>T1读-&gt;T2<strong>插入</strong>-&gt;T1再次读，多读了某些数据</li>
+</ul>
+<p>后两者又叫<strong>幻读</strong></p>
+</li>
+<li><p>读“脏”数据：T1修改了某些数据，T2读了这些数据，但是T1最终因为某些原因<strong>ROLLBACK</strong>了，T2读的这些数据处在一个不正确的状态</p>
+</li>
+</ul>
+<p>总的来说，可以总结为这个表：</p>
+<p><img src="/images/oneplusnameless/image-20221220104143739.png" alt="image-20221220104143739"></p>
+<h2 id="封锁（Locking）"><a href="#封锁（Locking）" class="headerlink" title="封锁（Locking）"></a>封锁（Locking）</h2><p>对一个数据对象操作之前添加锁，限制其他事务对其操作，分为：</p>
+<ul>
+<li><p>排它锁（Exclusive Locks），又叫X锁、写锁</p>
+<p>​    施加排它锁以后，其他事务<strong>不能写也不能读</strong></p>
+</li>
+<li><p>共享锁（Share Locks），又叫S锁、读锁</p>
+<p>​    施加共享锁以后，其他事务<strong>可以读但是不能写</strong></p>
+</li>
+</ul>
+<p>锁相容矩阵如下：</p>
+<p><img src="/images/oneplusnameless/image-20221220113829540.png" alt="image-20221220113829540"></p>
+<h2 id="封锁协议"><a href="#封锁协议" class="headerlink" title="封锁协议"></a>封锁协议</h2><p>封锁协议，就是对于事务在什么时候加锁、释放锁的规则。</p>
+<p>典型的封锁协议是<strong>三级协议</strong>，随着等级升高，避免并发错误的能力越强，当然，数据库的并发性能也会降低。</p>
+<h3 id="一级封锁协议"><a href="#一级封锁协议" class="headerlink" title="一级封锁协议"></a>一级封锁协议</h3><p>一级封锁协议只包含写锁：</p>
+<p>事务修改数据R之前必须加X锁，等到事务结束才释放</p>
+<p>由于其只有X锁，所以<strong>只能防止丢失修改，不能防止不可重复读和脏数据</strong></p>
+<h3 id="二级封锁协议"><a href="#二级封锁协议" class="headerlink" title="二级封锁协议"></a>二级封锁协议</h3><p>在一级封锁协议的基础上，二级封锁协议增加了读锁：</p>
+<p>事务T在读取数据R之前需要加S锁，在读取完毕之后释放</p>
+<p>在一级协议的基础上，二级封锁协议添加了S锁，只不过S锁的持续时间很短，所以<strong>只能预防读脏数据，而不能够预防不可重复读</strong></p>
+<p>关于为什么读不到脏数据：</p>
+<p>当一个事务修改R的时候，为其上了X锁，所以在其COMMIT或者ROLLBACK之前，别的事物都上不了S锁，自然也就不能读没有COMMIT的R</p>
+<h3 id="三级封锁协议"><a href="#三级封锁协议" class="headerlink" title="三级封锁协议"></a>三级封锁协议</h3><p>在一级协议的基础上，三级封锁不仅加了读锁，还将读锁释放的时间也推迟到了事务结束</p>
+<p>即：事务T在读取数据R之前需要加S锁，事务结束释放</p>
+<p>三级封锁协议可以<strong>防止丢失修改、读脏数据和不可重复度三种情况</strong></p>
+<h2 id="活锁和死锁"><a href="#活锁和死锁" class="headerlink" title="活锁和死锁"></a>活锁和死锁</h2><p>在操作的资源调度中，也学过类似的概念</p>
+<h3 id="活锁"><a href="#活锁" class="headerlink" title="活锁"></a>活锁</h3><p>所谓活锁，并不是真的锁，而是调度政策导致某个事物<strong>无限等待</strong>的情况</p>
+<p>避免活锁很简单，一般采用<strong>先来先服务FCFS</strong>调度策略</p>
+<h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><p>在OS中已经了解过，死锁产生的条件是：</p>
+<ul>
+<li>请求互斥的共享资源</li>
+<li>占有的资源不可被剥夺</li>
+<li>持续占有并等待</li>
+<li>相互循环等待</li>
+</ul>
+<h4 id="死锁的预防"><a href="#死锁的预防" class="headerlink" title="死锁的预防"></a>死锁的预防</h4><p>死锁的预防就是要<strong>破坏死锁产生的必要条件</strong>，有如下方法：</p>
+<ul>
+<li>一次封锁法：一次性把事务需要的数据全部加锁<ul>
+<li>但是这样会导致系统的并发度很低</li>
+<li>而且很难一次确定需要用到哪些数据</li>
+</ul>
+</li>
+<li>顺序封锁法：上锁必须有个公共顺序，前面的数据没上、后面的数据就不能上<ul>
+<li>这个公共顺序的维护很难</li>
+<li>难以强制按照规定顺序加锁</li>
+</ul>
+</li>
+</ul>
+<p>总结：上面两种方法都是cjb，数据库的死锁问题不像OS，应该重在判断并解除而不是预防。</p>
+<h4 id="死锁的诊断和解除"><a href="#死锁的诊断和解除" class="headerlink" title="死锁的诊断和解除"></a>死锁的诊断和解除</h4><p>死锁的判断主要有超时法和等待图法</p>
+<ul>
+<li>超时法：设定一个等待时限，如果事务等待超过这个时间就认为死锁了<ul>
+<li>缺点：数据库事务运行时间各不一样，差别很大，时间设置很难</li>
+</ul>
+</li>
+<li>等待图法：节点是事务，有向边T1-&gt;T2表示T1正在等待T2释放某个锁。如果在等待图中发现存在回路，就表示系统中出现了死锁。</li>
+</ul>
+<p>出现死锁以后，解除方法比较简单：选择代价最小的事务撤销即可</p>
+<h2 id="并发调度的可串行性"><a href="#并发调度的可串行性" class="headerlink" title="并发调度的可串行性"></a>并发调度的可串行性</h2><p>之前说过，串行调度虽然实用性不高，但是可以作为并发调度的一个准则来说</p>
+<h3 id="可串行化调度"><a href="#可串行化调度" class="headerlink" title="可串行化调度"></a>可串行化调度</h3><p>如果一个并发调度算法的结果和<strong>某一种</strong>（串行也可以排列组合）串行运行的结果是一致的，就称之为可串行化</p>
+<h3 id="冲突可串行化"><a href="#冲突可串行化" class="headerlink" title="冲突可串行化"></a>冲突可串行化</h3><p>这是一种更严格的概念</p>
+<p><strong>冲突</strong>：指一对<strong>连续</strong>动作，满足：<strong>交换顺序</strong>以后，涉及的事务中至少有一个<strong>事务行为改变</strong></p>
+<p>冲突的情况：</p>
+<ul>
+<li>同一事务：任何一对连续操作都是冲突的</li>
+<li>不同事务对同一元素的写</li>
+<li>不同事务对同一元素的一读一写</li>
+</ul>
+<p>不冲突的情况：</p>
+<ul>
+<li>不同事务对同一元素的读</li>
+<li>不同事务对不同元素操作</li>
+</ul>
+<p><strong>冲突可串行化：</strong>指一个调度，可以只进行一系列不冲突动作的交换来转化为串行调度</p>
+<h2 id="两段锁协议"><a href="#两段锁协议" class="headerlink" title="两段锁协议"></a>两段锁协议</h2><p>指一个事务分为上锁（扩展阶段）和释放锁（收缩阶段）两个阶段，一旦开始释放锁，就不允许上锁了</p>
+<p><strong>两段锁协议可以保证调度是可串行化的</strong></p>
+<p>但是两段锁协议的扩展阶段也不是一次性上完所有锁，不能够预防死锁</p>
+<h2 id="封锁的粒度"><a href="#封锁的粒度" class="headerlink" title="封锁的粒度"></a>封锁的粒度</h2><p>封锁的对象可以是逻辑单元（属性值、元组、关系、索引等）、也可以是物理单元（页、物理记录）</p>
+<p>封锁粒度越大，系统开销越小，并发度也小。</p>
+<h3 id="多粒度封锁"><a href="#多粒度封锁" class="headerlink" title="多粒度封锁"></a>多粒度封锁</h3><p>对于不同事务，封锁粒度不一致，需要处理大量元组的事务就封锁关系、需处理少量元组的事务就只需要封锁相应元组</p>
+<h3 id="多粒度树"><a href="#多粒度树" class="headerlink" title="多粒度树"></a>多粒度树</h3><p>用树结构表示数据库的逻辑单元，根是数据库，叶是最小的数据粒度。</p>
+<p>常用的是<strong>三级粒度树</strong>：</p>
+<p><img src="/images/oneplusnameless/image-20221220164444763.png" alt="image-20221220164444763"></p>
+<p>对于一个数据对象节点，封锁有两种：</p>
+<ul>
+<li>显式封锁：在这个节点加锁</li>
+<li>隐式封锁：在上级节点加了锁，这个节点自然也被锁了</li>
+</ul>
+<p>所以在上锁的时候，除了检查本节点，还要检查其所有祖先节点和子节点：</p>
+<ul>
+<li>本对象当然不能够有锁</li>
+<li>上级节点也不能够有锁，因为这会导致本节点有隐式锁</li>
+<li>下级节点也不能够被上锁，因为本节点会对下级节点上隐式锁</li>
+</ul>
+<p>所以这个过程其实是很麻烦的，要检查所有上下级节点</p>
+<p>为了这个检查过程的方便，就引入了意向锁</p>
+<h3 id="意向锁Intent-Lock"><a href="#意向锁Intent-Lock" class="headerlink" title="意向锁Intent Lock"></a>意向锁Intent Lock</h3><p>当给一个节点上锁的时候，要对其<strong>所有上节点加意向锁</strong>，这样就不必要在加锁的时候检查大量下节点了</p>
+<p>由于锁分为共享锁和排它锁，所以意向锁也有分类：</p>
+<ul>
+<li>意向共享锁（IS锁）：说明这个节点的某子节点加了S锁</li>
+<li>意向排它锁（IX锁）：说明这个节点的某子节点加了X锁</li>
+<li>共享意向排它锁（SIX锁）：SIX=S+IX，即这个节点自身加了S锁，某子节点加了X锁</li>
+</ul>
+<p>一个5*5的锁相容矩阵就来了：</p>
+<p><img src="/images/oneplusnameless/image-20221220171115002.png" alt="image-20221220171115002"></p>
+<p>锁的强度：</p>
+<p><img src="/images/oneplusnameless/image-20221220172108647.png" alt="image-20221220172108647"></p>
+<p><strong>申请封锁应该自上而下、释放封锁应该自下而上</strong></p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>本章首先抛出的交叉并发可能导致的问题：丢失修改、不可重复读、读脏数据</p>
+<p>数据库是围绕锁来进行并发控制的</p>
+<p>首先介绍了最基础的锁：共享锁和排它锁。</p>
+<p>有了基本的两种锁还不行，需要统一规定一个上锁的策略，根据上锁策略严格程度分为三级封锁协议：</p>
+<ul>
+<li>一级：写之前上排它锁，事务结束释放</li>
+<li>二级：一级 + 读之前上共享锁，读完释放</li>
+<li>三级：一级 + 读之前上共享锁，事务结束释放</li>
+</ul>
+<p>有了锁，就有等待，进而可能出现活锁和死锁：</p>
+<ul>
+<li>活锁指因为调度问题，某个事物等待非常久</li>
+<li>死锁指进入了一个死循环</li>
+</ul>
+<p>死锁的条件是</p>
+<ul>
+<li>请求互斥的共享资源</li>
+<li>占有的资源不可被剥夺</li>
+<li>持续占有并等待</li>
+<li>相互循环等待</li>
+</ul>
+<p>死锁的预防手段有：一次封锁和顺序封锁法</p>
+<p>DB的死锁处理一般倾向于诊断后解除而不是预防</p>
+<p>死锁的诊断方法有：超时法和等待图法</p>
+<p>死锁的解除比较简单：选择代价小的UNDO</p>
+<p>为了判断一个调度的正确性，可以按照其结果是否与串行结果中的一个一致，这样的调度叫做可串行化调度</p>
+<p>冲突可串行化则是更加严苛的概念，表示一个调度在一系列非冲突操作对的对换以后，可以变换成串行调度</p>
+<p>两段锁协议是保障可串行化的方法，但是其不能预防死锁</p>
+<p>最后还介绍了多粒度封锁，可以依据事务的不同，决定封锁的级别，多粒度封锁一般用多粒度树表示</p>
+<p>上级节点封锁会给下级节点上隐式锁，在给一个节点上锁的时候，还需要判断上级有没有给其上隐式锁，以及本节点需要对下级节点上显式锁，这会导致本节点无法对下级节点上隐式锁</p>
+<p>上述的检查过程是非常麻烦的，尤其是检查数量繁多的下级节点，所以引入了意向锁，表示被上意向锁的下级节点中有被上锁的</p>
+<p>根据锁类型的不同，意向锁又分为IS/IX/SIX锁，再加上S/X锁，五种锁之间有了一个5*5的锁相容矩阵</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2022/12/20/%E7%AC%AC%E5%8D%81%E4%B8%80%E7%AB%A0%20%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/">https://blog.boulevard.asia/2022/12/20/%E7%AC%AC%E5%8D%81%E4%B8%80%E7%AB%A0%20%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"># 数据库</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/12/24/%E4%B8%80%E5%8A%A08T%E6%8F%90%E5%8F%96image%E5%BA%95%E5%B1%82/">一加8T提取image底包 & namelssOS刷氧OS13踩坑</a>
+            
+            
+            <a class="next" rel="next" href="/2022/12/19/%E7%AC%AC%E5%8D%81%E7%AB%A0%20%E4%BA%8B%E5%8A%A1%E4%B8%8E%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D/">数据库原理第十章 数据库恢复技术</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

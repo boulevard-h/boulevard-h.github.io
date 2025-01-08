@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>数据库原理第十章 数据库恢复技术 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">数据库原理第十章 数据库恢复技术</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十二月 19, 2022&nbsp;&nbsp;20:57:48</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/">数据库系统原理</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="事务的概念"><a href="#事务的概念" class="headerlink" title="事务的概念"></a>事务的概念</h2><p>想要学好这一章的恢复技术以及下一章的并发控制，首先需要了解这两个技术考虑的基本单位：事务（Transaction）</p>
+<h3 id="事务的定义"><a href="#事务的定义" class="headerlink" title="事务的定义"></a>事务的定义</h3><p><strong>事务</strong>是数据库操作的序列，这些操作不可分割</p>
+<p>事务不等于程序，一个程序往往有多个事务</p>
+<p>事务在恢复和并发控制中是基本单位</p>
+<h4 id="定义语法"><a href="#定义语法" class="headerlink" title="定义语法"></a>定义语法</h4><p>事务可以显式定义，在一串SQL语句最后加上：</p>
+<ul>
+<li>COMMIT：表示事务结束、提交操作结果</li>
+<li>ROLLBACK：事务异常、回滚到事务执行前的状态</li>
+</ul>
+<p>当然没有用上面的显示方法定义的话，系统会自动划分</p>
+<h3 id="事务的特性"><a href="#事务的特性" class="headerlink" title="事务的特性"></a>事务的特性</h3><p>概括为ACID：</p>
+<ul>
+<li>原子性Atomicity：事务的操作要么全做、要么全不做</li>
+<li>一致性Consistency：事务不能够运行到一半终止且不回滚</li>
+<li>隔离性Isolation：并发事务互不干扰</li>
+<li>持续性Durability：事务对DB的改变是永久性的，不会被其他操作或者故障干扰</li>
+</ul>
+<h2 id="数据库恢复概述"><a href="#数据库恢复概述" class="headerlink" title="数据库恢复概述"></a>数据库恢复概述</h2><p>DBS在完整执行一个事务以后，会从一个一致状态（或正确状态）转变到另一个一致状态。而如果执行过程中发生了某些错误，就会导致DB停留在不一致的状态，<strong>恢复的目的就是把DB从不一致状态恢复到一致状态。</strong></p>
+<h2 id="故障种类"><a href="#故障种类" class="headerlink" title="故障种类"></a>故障种类</h2><h3 id="事务内部故障"><a href="#事务内部故障" class="headerlink" title="事务内部故障"></a>事务内部故障</h3><ul>
+<li><p>可预期故障：比如转账事务余额不足等，比较好解决，在程序里面ROLLBACK就行</p>
+</li>
+<li><p>不可预期故障：</p>
+<ul>
+<li>运算溢出</li>
+<li>并发死锁</li>
+<li>违法完整性</li>
+</ul>
+<p>这类故障较难考虑周到，没办法在程序里面写好处理</p>
+</li>
+</ul>
+<p>这时就需要DBMS强制ROLLBACK（UNDO处理）</p>
+<h3 id="系统故障"><a href="#系统故障" class="headerlink" title="系统故障"></a>系统故障</h3><p>又叫软故障，整个系统都停止了运作，比如断电。此时执行的所有事物都异常终止了。</p>
+<p>恢复策略：</p>
+<ul>
+<li>对于部分已经写入物理数据库的事务：强行撤销回滚（UNDO）</li>
+<li>对于已经完成但是没有COMMIT的事务：重做（REDO）</li>
+</ul>
+<h3 id="介质故障"><a href="#介质故障" class="headerlink" title="介质故障"></a>介质故障</h3><p>硬盘寄了</p>
+<h3 id="计算机病毒"><a href="#计算机病毒" class="headerlink" title="计算机病毒"></a>计算机病毒</h3><p>没啥好说的</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>总的来说，数据库破坏分为两种：</p>
+<ul>
+<li>数据库本身被破坏（介质故障、病毒）</li>
+<li>数据不正确（事务故障、系统故障）</li>
+</ul>
+<p>我们主要讨论第二种</p>
+<p>主要使用<strong>冗余</strong>来帮助恢复和重建</p>
+<h2 id="恢复的实现技术"><a href="#恢复的实现技术" class="headerlink" title="恢复的实现技术"></a>恢复的实现技术</h2><p>主要有转储、日志文件两种方法</p>
+<h3 id="数据转储"><a href="#数据转储" class="headerlink" title="数据转储"></a>数据转储</h3><p>指定期的为整个数据库中的文件创建一个<strong>后备副本</strong>，遭到破坏以后需要重新装入，可以<strong>恢复到转储时的状态</strong></p>
+<p>如果想要将事务恢复到故障发生状态的话，还需要重新运行转储以后的所有事务</p>
+<h3 id="转储分类"><a href="#转储分类" class="headerlink" title="转储分类"></a>转储分类</h3><h4 id="动态与静态"><a href="#动态与静态" class="headerlink" title="动态与静态"></a>动态与静态</h4><p>转储不是一个瞬间过程，需要持续一段时间，根据转储的时候是否可以继续操作DB分为动态和静态转储</p>
+<p><strong>静态转储</strong>实现很简单，但是降低了数据库的可用性</p>
+<p><strong>动态转储</strong>可用性更高，但是需要一定技术来保证副本是有效的，这时就需要用到<strong>日志文件</strong>，记录转储过程中又有一些什么操作</p>
+<h4 id="海量和增量"><a href="#海量和增量" class="headerlink" title="海量和增量"></a>海量和增量</h4><p>熟悉手机刷机的对这个应该比较熟悉，海量更新就是每次都转储数据库的全部数据，增量更新就是只转储更新过的数据</p>
+<h3 id="日志文件"><a href="#日志文件" class="headerlink" title="日志文件"></a>日志文件</h3><h4 id="日志的格式和内容"><a href="#日志的格式和内容" class="headerlink" title="日志的格式和内容"></a>日志的格式和内容</h4><p>日志文件有以记录为单位的也有以块为单位的</p>
+<p><strong>以记录为单位的日志文件：</strong></p>
+<ol>
+<li>事务开始的标记</li>
+<li>事务结束的标记</li>
+<li>事务包含的所有更新操作</li>
+</ol>
+<p><strong>具体每条记录的内容：</strong></p>
+<ul>
+<li>事务表示</li>
+<li>操作类型</li>
+<li>操作对象</li>
+<li>旧值</li>
+<li>新值</li>
+</ul>
+<p><strong>以数据块为单位的日志文件：</strong></p>
+<ol>
+<li>事务标识</li>
+<li>更新前后的数据块</li>
+</ol>
+<h3 id="日志文件的作用"><a href="#日志文件的作用" class="headerlink" title="日志文件的作用"></a>日志文件的作用</h3><ul>
+<li>可以用于事务故障和系统故障的恢复</li>
+<li>按照之前所说，可以协助后备副本恢复</li>
+</ul>
+<h3 id="登记日志文件"><a href="#登记日志文件" class="headerlink" title="登记日志文件"></a>登记日志文件</h3><p>登记日志文件的时候需要严格遵守如下两条原则：</p>
+<ul>
+<li>严格按照时间顺序等级</li>
+<li>先写日志再写数据库</li>
+</ul>
+<h2 id="恢复策略"><a href="#恢复策略" class="headerlink" title="恢复策略"></a>恢复策略</h2><h3 id="事务故障的恢复"><a href="#事务故障的恢复" class="headerlink" title="事务故障的恢复"></a>事务故障的恢复</h3><p>直接UNDO即可：</p>
+<ol>
+<li>反向扫描日志文件</li>
+<li>对于事务的更新做反向操作</li>
+</ol>
+<h3 id="系统故障的恢复"><a href="#系统故障的恢复" class="headerlink" title="系统故障的恢复"></a>系统故障的恢复</h3><p>系统故障导致的故障事务有两种：</p>
+<ul>
+<li>未完成的事务</li>
+<li>已经提交但是还留在buffer未写入数据库的事务（<strong>有commit</strong>）</li>
+</ul>
+<p>对于第一条·未完成的事务，和上面一样UNDO即可</p>
+<p>对于已完成在buffer中的事务，采用REDO做法</p>
+<h3 id="介质故障的恢复"><a href="#介质故障的恢复" class="headerlink" title="介质故障的恢复"></a>介质故障的恢复</h3><ol>
+<li>装入最近的副本<ul>
+<li>静态的直接装</li>
+<li>动态的配合日志</li>
+</ul>
+</li>
+<li>redo副本完成-故障期间的事务</li>
+</ol>
+<h2 id="具有检查点的恢复技术"><a href="#具有检查点的恢复技术" class="headerlink" title="具有检查点的恢复技术"></a>具有检查点的恢复技术</h2><p>前面说的搜索日志实在是太费时间了，所以在日志文件中添加了检查点记录（check point）和一个重新开始文件，可以动态的维护日志</p>
+<p>检查点的内容：</p>
+<ul>
+<li>建立检查点时，正在执行的事务</li>
+<li>这些事务最近日志记录的地址</li>
+</ul>
+<p>重新开始文件的内容：</p>
+<ul>
+<li>各个检查点记录在日志文件中的地址</li>
+</ul>
+<p>可以理解为，检查点指向记录，重新开始文件指向检查点</p>
+<h3 id="利用检查点的恢复策略"><a href="#利用检查点的恢复策略" class="headerlink" title="利用检查点的恢复策略"></a>利用检查点的恢复策略</h3><p><img src="E:\Blog\source\images\oneplusnameless\image-20221219203258683.png" alt="image-20221219203258683"></p>
+<p><strong>只看完成时间，不看开始时间</strong></p>
+<ul>
+<li>在检查点之前完成的：不用管</li>
+<li>在检查点之后、系统故障之前完成的：重做</li>
+<li>在故障时还没完成的：撤销</li>
+</ul>
+<h2 id="数据库镜像"><a href="#数据库镜像" class="headerlink" title="数据库镜像"></a>数据库镜像</h2><p>数据库镜像是针对介质故障的方法</p>
+<p>数据库会把其<strong>全部或部分</strong>复制一个镜像，DBMS会自动维护其一致性，出现故障的时候就可以使用镜像并从镜像恢复</p>
+<p>一般来说只会对<strong>关键数据和日志文件镜像</strong></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本章讲的是数据库在发生数据不一致或者错误之后的恢复技术，首先介绍了数据库恢复和并发控制的基本单位——事务，以及事务的ACID四大特性</p>
+<p>考虑数据库的恢复，先要考虑数据库运行过程中可能的故障：事务内部故障、系统故障、介质故障和计算机病毒。本课程着重考察前两者。</p>
+<p>数据库的恢复主要依靠两个技术——转储和日志。</p>
+<p>转储，即把数据库复制一个后备副本，在需要的时候可以用副本来恢复。</p>
+<p>转储根据是否可以在转储时工作分为动态和静态，同时还有海量和增量之分。动态转储需要配合日志使用。</p>
+<p>日志有以记录为单位和以数据块为单位的，这里主要讨论以记录为单位的。日志可以单独用于恢复，也可以协助动态转储恢复。</p>
+<p>记录日志的时候，一定要先写日志再写数据库。</p>
+<p>对于事务故障，一般采用UNDO也就是系统强制ROLLBACK</p>
+<p>对于系统故障，一般根据事务是执行到一半被终止还是执行完了在buffer没来得及写入。前者和事务故障一样需要UNDO、后者需要REDO。</p>
+<p>介质故障必须要日志+转储强制使用。</p>
+<p>检查点其实是日志的一种升级，检查点记录了当前事务和事务最近活动的记录位置，可以方便查找事务，而所有的检查点又被存到了重新开始文件中。</p>
+<p>数据库镜像主要是针对介质故障的，镜像可以是部分关键数据和日志文件的，在从镜像恢复数据库的过程中，镜像可以运行开保障数据库的可用性。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2022/12/19/%E7%AC%AC%E5%8D%81%E7%AB%A0%20%E4%BA%8B%E5%8A%A1%E4%B8%8E%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D/">https://blog.boulevard.asia/2022/12/19/%E7%AC%AC%E5%8D%81%E7%AB%A0%20%E4%BA%8B%E5%8A%A1%E4%B8%8E%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"># 数据库</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/12/20/%E7%AC%AC%E5%8D%81%E4%B8%80%E7%AB%A0%20%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/">数据库原理第十一章 并发控制</a>
+            
+            
+            <a class="next" rel="next" href="/2022/12/19/%E4%B8%80%E5%8A%A08T%E5%88%B7%E5%85%A5namelessOS/">一加8T刷入namelessOS</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

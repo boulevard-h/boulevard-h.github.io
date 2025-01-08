@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>Linux Network 1: SKB | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Linux Network 1: SKB</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">七月 1, 2024&nbsp;&nbsp;19:40:21</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Linux-Kernel/">Linux Kernel</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/tzh36/p/5424564.html">Linux内核：sk_buff解析 - 唐稚骅 - 博客园 (cnblogs.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3c5d5fa339fc">skb结构和相关操作函数 - 简书 (jianshu.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/x_wukong/p/6650056.html">Linux 内核网络协议栈 ———sk_buff 结构体 以及 完全解释 （2.6.16） - 明明是悟空 - 博客园 (cnblogs.com)</a></p>
+<h2 id="1-SKB-结构概览"><a href="#1-SKB-结构概览" class="headerlink" title="1. SKB 结构概览"></a>1. SKB 结构概览</h2><p>SKB 的结构是这样一个很复杂的图，可以看到 skb 分为三部分：控制（<code>struct sk_buff</code> 本身）、线性数据、非线性数据（skb_shared_info）</p>
+<p><img src="/images/Linux-Network-1-SKB/SouthEast.png" alt="img"></p>
+<h2 id="2-SKB-线性数据部分"><a href="#2-SKB-线性数据部分" class="headerlink" title="2. SKB 线性数据部分"></a>2. SKB 线性数据部分</h2><p>SKB 的线性数据部分是用于存放数据包的<strong>连续内存空间</strong>，所以称为是线性的，主要有 head, end, data, tail 四个指针。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span> &#123;</span></span><br><span class="line">    </span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">__u16 transport_header; <span class="comment">//传输头相对于skb-&gt;head的偏移</span></span><br><span class="line"></span><br><span class="line">__u16 network_header;<span class="comment">//网络头相对于skb-&gt;head的偏移</span></span><br><span class="line"></span><br><span class="line">__u16 mac_header;<span class="comment">//以太网头相对于skb-&gt;head的偏移</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* These elements must be at the end, see alloc_skb() for details. */</span></span><br><span class="line"></span><br><span class="line"><span class="type">sk_buff_data_t</span> tail;</span><br><span class="line"></span><br><span class="line"><span class="type">sk_buff_data_t</span> end;</span><br><span class="line"></span><br><span class="line"><span class="type">unsigned</span> <span class="type">char</span> *head, *data;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>head 和 end 指向数据趋于的头部和尾部，是分配的时候就固定的</li>
+<li>data 和 tail 是真正数据的开头和结尾</li>
+<li>head 与 data 之间的趋于被称为 headroom，data 和 tail 之间的区域被称为 tailroom。刚刚分配的时候，headroom 大小为 0，tailroom 大小为 size，后续的操作通过移动 data 和 tail 来完成。</li>
+</ul>
+<p>四者的关系在这个图里面很清楚：</p>
+<p><img src="/images/Linux-Network-1-SKB/941007-20160423142022179-2013851116.jpg" alt="img"></p>
+<h2 id="3-SKB-非线性数据部分"><a href="#3-SKB-非线性数据部分" class="headerlink" title="3. SKB 非线性数据部分"></a>3. SKB 非线性数据部分</h2><p>对于大型或者是分片的数据包，其数据无法存储到连续的内存块也就是 data 中，所以需要非线性的数据存储。</p>
+<p>skb 中有一个叫做 skb_shared_info 的结构来管理非线性部分：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">skb_shared_info</span> &#123;</span></span><br><span class="line">    <span class="type">atomic_t</span> dataref;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">short</span> nr_frags;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">short</span> gso_size;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">short</span> gso_segs;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">short</span> gso_type;</span><br><span class="line">    __be32 ip6_frag_id;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sk_buff</span> *<span class="title">frag_list</span>;</span></span><br><span class="line">    <span class="type">skb_frag_t</span> frags[MAX_SKB_FRAGS];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>nr_frags：非线性部分的片段数量</li>
+<li>frags：片段</li>
+</ul>
+<p>每一个片段 skb_frag_t 如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct skb_frag_struct &#123;</span><br><span class="line">    struct page *page;</span><br><span class="line">    __u32 page_offset;</span><br><span class="line">    __u32 size;</span><br><span class="line">&#125; skb_frag_t;</span><br></pre></td></tr></table></figure>
+<p>这个结构体记录了片段在内存中的位置和大小。</p>
+<h3 id="3-1-非线性部分的用途"><a href="#3-1-非线性部分的用途" class="headerlink" title="3.1 非线性部分的用途"></a>3.1 非线性部分的用途</h3><p>非线性部分的用途主要有：</p>
+<ul>
+<li>数据包过大，难以分配连续内存</li>
+<li>IP 分片和重组</li>
+</ul>
+<h2 id="4-skb-gt-len-与-skb-gt-data-len"><a href="#4-skb-gt-len-与-skb-gt-data-len" class="headerlink" title="4. skb-&gt;len 与 skb-&gt;data_len"></a>4. skb-&gt;len 与 skb-&gt;data_len</h2><p>len 指的是数据包的总长度，也就是线性和非线性长度之和。</p>
+<p>data_len 虽然带有 data 字样，但<strong>不是</strong>线性部分 data 的长度，<strong>而是</strong>非线性部分的长度。</p>
+<p>而线性部分 skb_headlen(skb) = skb-&gt;len - skb-&gt;data_len。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2024/07/01/Linux-Network-1-SKB/">https://blog.boulevard.asia/2024/07/01/Linux-Network-1-SKB/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Linux/"># Linux</a>
+                    
+                        <a href="/tags/Kernel/"># Kernel</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/07/01/Linux-Network-2-%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%A9%B1%E5%8A%A8%E6%94%B6%E5%8C%85/">Linux Network 2: 以太网驱动收包</a>
+            
+            
+            <a class="next" rel="next" href="/2024/06/18/tailscale-%E5%9C%A8%E4%BD%A0%E7%9A%84%E8%BF%9C%E7%A8%8B%E8%AE%BE%E5%A4%87%E4%B9%8B%E9%97%B4%E6%90%AD%E5%BB%BA%E5%B1%80%E5%9F%9F%E7%BD%91/">tailscale: 在你的远程设备之间搭建局域网</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

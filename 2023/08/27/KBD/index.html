@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>客制化之旅记录OvO | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">客制化之旅记录OvO</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">八月 27, 2023&nbsp;&nbsp;8:39:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%AE%A2%E5%88%B6%E5%8C%96%E9%94%AE%E7%9B%98/">客制化键盘</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="CX60"><a href="#CX60" class="headerlink" title="CX60"></a>CX60</h2><p>送个我家猪的w &amp; 入坑作</p>
+<ul>
+<li><strong>套件</strong>：CX60 <em>by 大星</em></li>
+<li><strong>轴体</strong>：Outemu 静音白轴</li>
+<li><strong>键帽</strong>：Menphis</li>
+</ul>
+<p><img src="/images/KBD/wx_camera_1629278155067.jpg" alt="wx_camera_1629278155067"></p>
+<p>不上键帽似乎更好看(?</p>
+<p><img src="/images/KBD/wx_camera_1629706693126.jpg" alt="wx_camera_1629706693126"></p>
+<h2 id="Cheap68"><a href="#Cheap68" class="headerlink" title="Cheap68"></a>Cheap68</h2><p>自己的第一把客制化</p>
+<ul>
+<li><strong>PCB</strong>：KBD67焊接版 <em>by KBDfans怡科</em></li>
+<li><strong>外壳</strong>：Cheap 68</li>
+<li><strong>轴体</strong>：TTC 快银轴</li>
+<li><strong>键帽</strong>：珊瑚海 / Olivia / 微光</li>
+</ul>
+<p><img src="/images/KBD/IMG_20210905_160642.jpg" alt="IMG_20210905_160642"></p>
+<p><img src="/images/KBD/IMG_20210905_164343.jpg" alt="IMG_20210905_164343"></p>
+<p><img src="/images/KBD/IMG_20211128_140753.jpg" alt="IMG_20211128_140753"></p>
+<h2 id="Mr-Hat复刻"><a href="#Mr-Hat复刻" class="headerlink" title="Mr.Hat复刻"></a>Mr.Hat复刻</h2><p>3D打印，自喷漆，自己修改键线分离模块…可以说是付出很多了</p>
+<ul>
+<li><strong>PCB</strong>：KBD8x mk2 <em>by KBDfans怡科</em></li>
+<li><strong>外壳</strong>：Mr.Hat by MatrixLAB 3D打印&amp;自喷漆复刻</li>
+<li><strong>轴体</strong>：集贤 牛紫轴 <em>by 发狗</em></li>
+<li><strong>键帽</strong>：德古拉伯爵 <em>by Akko</em></li>
+</ul>
+<p><img src="/images/KBD/IMG_20211114_135527.jpg" alt="IMG_20211114_135527"></p>
+<p><img src="/images/KBD/wx_camera_1637036762216.jpg" alt="wx_camera_1637036762216"></p>
+<p><img src="/images/KBD/IMG_20211111_131645.jpg" alt="IMG_20211111_131645"></p>
+<p><img src="/images/KBD/IMG_20211111_172345.jpg" alt="IMG_20211111_172345"></p>
+<h3 id="一些小小的改造过程记录…"><a href="#一些小小的改造过程记录…" class="headerlink" title="一些小小的改造过程记录…"></a>一些小小的改造过程记录…</h3><p><img src="/images/KBD/IMG_20211105_083114.jpg" alt="IMG_20211105_083114"></p>
+<p><img src="/images/KBD/IMG_20211025_225444.jpg" alt="IMG_20211025_225444"></p>
+<h2 id="Buff67-v2"><a href="#Buff67-v2" class="headerlink" title="Buff67 v2"></a>Buff67 v2</h2><p>第一把铝坨坨了…</p>
+<ul>
+<li><strong>套件</strong>：Buff67 v2 <em>by MDD</em></li>
+<li><strong>轴体</strong>：Lumia&amp;MMD Cream / HyperGlide BLACK <em>by cherry</em> / KTT 白轴v3 / 草莓酒红</li>
+<li><strong>键帽</strong>：Merlin / 袜子</li>
+</ul>
+<p><img src="/images/KBD/IMG_20211204_102325.jpg" alt="IMG_20211204_102325"></p>
+<p><img src="/images/KBD/IMG_20220116_104041.jpg" alt="IMG_20220116_104041"></p>
+<h2 id="Next-75"><a href="#Next-75" class="headerlink" title="Next 75"></a>Next 75</h2><p>一伯块捡来打游戏的垃圾^ ^</p>
+<ul>
+<li><strong>套件</strong>：Next75 <em>by 老薛</em></li>
+<li><strong>轴体</strong>：RGB Speed Silver <em>by cherry</em></li>
+<li><strong>键帽</strong>：古风仓颉字根</li>
+</ul>
+<p><img src="/images/KBD/IMG_20220716_190525.jpg" alt="IMG_20220716_190525"></p>
+<p><img src="/images/KBD/IMG_20220121_213411.jpg" alt="IMG_20220121_213411"></p>
+<h2 id="JINX-67-powered-by-ZUOER"><a href="#JINX-67-powered-by-ZUOER" class="headerlink" title="JINX 67 powered by ZUOER"></a>JINX 67 powered by ZUOER</h2><p>算是自己半设计了，话是很喜欢这把的</p>
+<ul>
+<li><strong>PCB</strong>：CIY 68</li>
+<li><strong>外壳</strong>：JINX V1/V2 <em>by boulevard</em></li>
+<li><strong>轴体</strong>：Outemu 水蜜桃轴</li>
+<li><strong>键帽</strong>：PBOW <em>by 神婆</em></li>
+</ul>
+<h3 id="JINX-V1"><a href="#JINX-V1" class="headerlink" title="JINX V1"></a>JINX V1</h3><p>镭射版本的</p>
+<p><img src="/images/KBD/IMG_20220327_101958.jpg" alt="IMG_20220327_101958"></p>
+<h3 id="JINX-V2"><a href="#JINX-V2" class="headerlink" title="JINX V2"></a>JINX V2</h3><p>UV磨砂版本的（更耐用&amp;更贵）</p>
+<p><img src="/images/KBD/wx_camera_1652506151486.jpg" alt="wx_camera_1652506151486"></p>
+<p><img src="/images/KBD/IMG_20220427_100407.jpg" alt="IMG_20220427_100407"></p>
+<h3 id="内胆改造"><a href="#内胆改造" class="headerlink" title="内胆改造"></a>内胆改造</h3><p>灰常软弹的自制硅胶粒~</p>
+<p><img src="/images/KBD/IMG_20220815_103133.jpg" alt="IMG_20220815_103133"></p>
+<p><img src="/images/KBD/-6e71f0d90a73400e.jpg" alt="-6e71f0d90a73400e"></p>
+<h2 id="VAST75"><a href="#VAST75" class="headerlink" title="VAST75"></a>VAST75</h2><p>贵还折腾，只能说新人团慎重= =不过外观确实有一手</p>
+<ul>
+<li><strong>套件</strong>：VAST75 <em>by Monster Keith</em></li>
+<li><strong>轴体</strong>：Carol Switch <em>by JWICK</em></li>
+<li><strong>键帽</strong>：SODA <em>by XIAO Studio</em></li>
+</ul>
+<p><img src="/images/KBD/IMG_20220627_191055.jpg" alt="IMG_20220627_191055"></p>
+<p><img src="/images/KBD/wx_camera_1656914188764.jpg" alt="wx_camera_1656914188764"></p>
+<h2 id="Cherry-G80-11900"><a href="#Cherry-G80-11900" class="headerlink" title="Cherry G80-11900"></a>Cherry G80-11900</h2><p>年纪比我还大…但是长得真的好有感觉，老黑处理完也挺不错的</p>
+<ul>
+<li><strong>套件</strong>：Cherry G80-11900</li>
+<li><strong>轴体</strong>：Cherry BLACK</li>
+<li><strong>键帽</strong>：Cherry Original Keycaps</li>
+</ul>
+<p><strong>Old：</strong></p>
+<p><img src="/images/KBD/wx_camera_1658556962286.jpg" alt="wx_camera_1658556962286"></p>
+<p><strong>Brand New：</strong></p>
+<p><img src="/images/KBD/IMG_20220814_190042.jpg" alt="IMG_20220814_190042"></p>
+<p><img src="/images/KBD/IMG_20220814_163859.jpg" alt="IMG_20220814_163859"></p>
+<h2 id="亚克力-Spring"><a href="#亚克力-Spring" class="headerlink" title="亚克力 Spring"></a>亚克力 Spring</h2><ul>
+<li><strong>内胆</strong>：Spring <em>By OWLAB</em></li>
+<li><strong>定位板</strong>：黑芯沉金FR4 <em>by HyperBoring</em></li>
+<li><strong>外壳</strong>：亚克力（暂用）</li>
+<li><strong>轴体</strong>：草莓奶昔缝合轴 / MM Switch <em>by Wuque Studio</em></li>
+<li><strong>键帽</strong>：手稿</li>
+</ul>
+<p><img src="/images/KBD/亚克力spring1.jpg" alt="亚克力spring1"></p>
+<p><img src="/images/KBD/亚克力spring2.jpg" alt="亚克力spring2"></p>
+<h2 id="Spirit-Blossom-Powered-by-ZUOER"><a href="#Spirit-Blossom-Powered-by-ZUOER" class="headerlink" title="Spirit Blossom Powered by ZUOER"></a>Spirit Blossom Powered by ZUOER</h2><p>🐽的第二把也来咯</p>
+<ul>
+<li><strong>PCB</strong>：CIY 68</li>
+<li><strong>外壳</strong>：Spirit Blossom <em>by 紫炁&amp;boulevard</em></li>
+<li><strong>轴体</strong>：灰木V3 <em>by LEOBERG</em></li>
+<li><strong>键帽</strong>：紫罗兰 <em>by SUO</em></li>
+</ul>
+<p><img src="/images/KBD/3d5b1ea20ac892343c1735544d0d0c8.jpg" alt="3d5b1ea20ac892343c1735544d0d0c8"></p>
+<p><img src="/images/KBD/68528fbdfb4a49e0f5be105ca982e40.jpg" alt="68528fbdfb4a49e0f5be105ca982e40"></p>
+<p><img src="/images/KBD/cadaf8beee015f6e757722742a6d04e.jpg" alt="cadaf8beee015f6e757722742a6d04e"></p>
+<h2 id="0xCB-Static"><a href="#0xCB-Static" class="headerlink" title="0xCB Static"></a>0xCB Static</h2><p>主要是被外观、功能、价格吸引了</p>
+<p>一百出头的价格，很独特的电子工业风格、自己焊接所有的元器件，屏幕和小旋钮都有</p>
+<p>可惜学校这把被折腾坏了只能当摆件用了，等寒假把家里的那把组了再玩玩</p>
+<ul>
+<li><strong>套件：</strong>0xCB Static</li>
+<li><strong>轴体：</strong>RK粉轴 <em>by 九紫电子&amp;RK</em></li>
+<li><strong>键帽：</strong>不知名黑透键帽</li>
+</ul>
+<p><img src="/images/KBD/8631281945e7f92ff0a440345cd9e0b.jpg" alt="8631281945e7f92ff0a440345cd9e0b"></p>
+<p><img src="/images/KBD/71914539c5e763c412c334240f05b0f.jpg" alt="71914539c5e763c412c334240f05b0f"></p>
+<h2 id="AMX55木坨坨"><a href="#AMX55木坨坨" class="headerlink" title="AMX55木坨坨"></a>AMX55木坨坨</h2><p>老周送的枫木套件，据说定制一个得400？确实比黑胡桃木好看很多。</p>
+<p>因为是不标准配列，所以自己设计了一张PCB，顺便学习了一下Vial固件的写法<a target="_blank" rel="noopener" href="https://blog-boulevard.top/2022/10/24/qmk-vial/">QMK编译+Vial在线改键功能 | Boulevard’s Blog (blog-boulevard.top)</a>。</p>
+<p>不过折腾完40%的Static和50%的这个以后，真的是再也不想碰未成年配列的，基本上用不了…所以就出了</p>
+<ul>
+<li><strong>外壳：</strong>老周定制枫木外壳</li>
+<li><strong>PCB：</strong>amx55 <em>by boulevard</em></li>
+<li><strong>轴体：</strong>集贤白轴V2(送测版) <em>by FaDog</em></li>
+<li><strong>键帽：</strong>手稿 <em>by 锄头</em></li>
+</ul>
+<p><img src="/images/KBD/e4716b76d8ba44d195c30168b31259a.jpg" alt="e4716b76d8ba44d195c30168b31259a"></p>
+<p><img src="/images/KBD/10ea33626ea2168b667ab417629d67f.jpg" alt="10ea33626ea2168b667ab417629d67f"></p>
+<h2 id="Mr-Hat复刻-闪黑"><a href="#Mr-Hat复刻-闪黑" class="headerlink" title="Mr.Hat复刻 闪黑"></a>Mr.Hat复刻 闪黑</h2><p>自喷漆用了一年，表面的黑色部分实在是顶不住了，重新找人做了个闪黑：</p>
+<p><img src="/images/KBD/c9ce15a0fb1e6944337c89d7dd316e5.jpg" alt="c9ce15a0fb1e6944337c89d7dd316e5"></p>
+<p><img src="/images/KBD/04d78c5901a2c93382ea25a6819cd34.jpg" alt="04d78c5901a2c93382ea25a6819cd34"></p>
+<p><img src="/images/KBD/0ecb3434ff9f6b9118079e048206867.jpg" alt="0ecb3434ff9f6b9118079e048206867"></p>
+<p><img src="/images/KBD/ed374227e28d2b29331fbbee4c2456f.jpg" alt="ed374227e28d2b29331fbbee4c2456f"></p>
+<h2 id="PaperPlane-65"><a href="#PaperPlane-65" class="headerlink" title="PaperPlane 65%"></a>PaperPlane 65%</h2><p>在外网看到的，很有工业风设计感，所以就打算自己复刻。</p>
+<p><strong>外壳：</strong>铝合金阳极喷砂工艺，边缘质感比较糙。带有镜面不锈钢配重</p>
+<p><strong>定位板：</strong>铝合金在这个厚度变形太严重，所以换成了Fr-4</p>
+<p><strong>PCB：</strong>用QMK+电磁阀+蜂鸣器+USB HUB+Vial方案制作，由于经费问题，采用的是黄芯紫线</p>
+<p><strong>轴体：</strong>HG红 <em>by Cherry</em></p>
+<p><strong>键帽：</strong>黑同刻-克苏鲁字根 <em>by 星河山川</em></p>
+<p><img src="/images/KBD/d98ffa70af6c528186f075da6cf3fd8.jpg" alt="d98ffa70af6c528186f075da6cf3fd8"></p>
+<p><img src="/images/KBD/c04a35c83c27d8fcda0509dfb512afe.jpg" alt="c04a35c83c27d8fcda0509dfb512afe"></p>
+<p><img src="/images/KBD/bcf87c3bbecd758ef98a4b2ee339f99.jpg" alt="bcf87c3bbecd758ef98a4b2ee339f99"></p>
+<h2 id="QwertyKeys-QK75"><a href="#QwertyKeys-QK75" class="headerlink" title="QwertyKeys QK75"></a>QwertyKeys QK75</h2><p>现在的主力键盘了，虽然设计不多，但是配上这套键帽出奇的好看，硬GAS的手感和轴体也很搭。也算是圆满了我对奶白黑镜的执念。</p>
+<p><strong>轴体：</strong>雪兰灰轴 <em>by AKKO&amp;KTT&amp;XCJZ</em></p>
+<p><strong>定位板：</strong>Fr-4</p>
+<p><strong>键帽：</strong> C64 Dark <em>by AlephKeys</em></p>
+<p><img src="/images/KBD/44ec3c260603dede5d253e1a7f30565.jpg" alt="44ec3c260603dede5d253e1a7f30565"></p>
+<p><img src="/images/KBD/0ce27189c83180c4275dd102136ce5f.jpg" alt="0ce27189c83180c4275dd102136ce5f"></p>
+<p><img src="/images/KBD/543105293eea1bbe46d29ccb929e744.jpg" alt="543105293eea1bbe46d29ccb929e744"></p>
+<p><img src="/images/KBD/5ccb1d877c0ce5480b54c19c4248aa7.jpg" alt="5ccb1d877c0ce5480b54c19c4248aa7"></p>
+<h2 id="Apple-M0110-注塑复刻"><a href="#Apple-M0110-注塑复刻" class="headerlink" title="Apple M0110 注塑复刻"></a>Apple M0110 注塑复刻</h2><p>两百多的价格，HHKB配列复古造型、无钢、电磁阀，可以说是一把很合格的复古玩具了，无钢茶轴确实也很舒服。</p>
+<p><strong>轴体：</strong>Cherry Brown</p>
+<p><strong>填充：</strong>AB硅胶+Poron</p>
+<p><strong>键帽：</strong>复古键帽 俄文字根  <em>by 星河山川</em> + Caps 9009灯帽 <em>by EPBT</em></p>
+<p><strong>个性：</strong>麦金塔</p>
+<p><img src="/images/KBD/402f5cf3cb2b92f4b4dffc92906533d.jpg" alt="402f5cf3cb2b92f4b4dffc92906533d"></p>
+<p><img src="/images/KBD/5471860c321ad27df849d8a6214650e.jpg" alt="5471860c321ad27df849d8a6214650e"></p>
+<p><img src="/images/KBD/62c99344a60316089300e5b77914fdf.jpg" alt="62c99344a60316089300e5b77914fdf"></p>
+<h2 id="炁-65-PCB"><a href="#炁-65-PCB" class="headerlink" title="炁 65% PCB"></a>炁 65% PCB</h2><p>两把zuoer用的CIY68 pcb在无线方面实在是太差劲了，而且老是抽风，所以用假期时间又用优联方案制作了一套代替PCB。</p>
+<p>主控采用的是罗技k580的主控，优点是便宜，缺点是不像k375s主控自带排线接口，很方便接线，需要自己设计转接板来接线。第一次弄转接板的时候焊盘嘎嘎掉，差点给我心态弄爆炸了。</p>
+<p><img src="/images/KBD/9056240104e7f405c4e802dc2487de7.jpg" alt="9056240104e7f405c4e802dc2487de7"></p>
+<p>还有一个缺点就是不能改键，68配列的F区都需要使用多路复用器来实现，真·物理切层（反正CIY也好不到哪去）。</p>
+<p><img src="/images/KBD/9eeacb13aba905bb1815c4b7ca472ee.jpg" alt="9eeacb13aba905bb1815c4b7ca472ee"></p>
+<p>做好的板子印上Logo还是很帅的，锂电池充放电模块转移到了PCB上面，节省键盘内部空间，当然为了保留兼容性，还是设计了外接电池模块的接口。</p>
+<p>配列也做到了多佩列兼容，支持小门牙67、阶梯Caps和7回。</p>
+<p>最大的优点还是罗技优联的强大功能，连接稳定性高的同时耗电量非常的低、同时休眠以后的唤醒完全无延迟。</p>
+<h2 id="CIY-GAS67外壳"><a href="#CIY-GAS67外壳" class="headerlink" title="CIY-GAS67外壳"></a>CIY-GAS67外壳</h2><p>实在不忍心看战损的JINX zuoer在包里挤来挤去了，换一个外壳和键帽，没想到都是两位数的外壳和键帽还挺好看的，就是外壳开关位置有点不兼容，只能短接常开了…</p>
+<p><strong>PCB：</strong>炁 65%</p>
+<p><strong>轴体：</strong>Box冰淇淋Pro静音轴 <em>by 凯华</em></p>
+<p><strong>键帽：</strong>pagy 红半透 <em>by 爱菲</em> </p>
+<p><img src="/images/KBD/image-20230322170536696.png" alt="image-20230322170404605"></p>
+<p><img src="/images/KBD/image-20230322170506883.png" alt="image-20230322170408098"></p>
+<p><img src="/images/KBD/QQ图片20230322170623.jpg" alt="QQ图片20230322170623"></p>
+<h3 id="爱菲Vior键帽"><a href="#爱菲Vior键帽" class="headerlink" title="爱菲Vior键帽"></a>爱菲Vior键帽</h3><p>三个月以后，ABSFans的键帽已经比我的脸还油了…于是换上了闪粉版本的</p>
+<p><img src="/images/KBD/a395f6a93d53fe36423d6d01523b28b.jpg" alt="a395f6a93d53fe36423d6d01523b28b"></p>
+<p><img src="/images/KBD/bcf79f5f9ca628f75616814a948c6ae.jpg" alt="bcf79f5f9ca628f75616814a948c6ae"></p>
+<p>（但愿这次能用久一点…</p>
+<h2 id="Sugar-80"><a href="#Sugar-80" class="headerlink" title="Sugar 80"></a>Sugar 80</h2><p>去年的老东西了，🐎宝说他喜欢这种简约外壳就给弄了…不得不说，配出来真的很妹妹风。灰木V4比V3可舒服太多了</p>
+<p><strong>外壳：</strong>Tiger80 lite <em>by KBDFans</em></p>
+<p><strong>PCB：</strong>Y&amp;R 80 黑芯绿油 水果湖复刻</p>
+<p><strong>键帽：</strong></p>
+<ul>
+<li>主体：PBOW</li>
+<li>淡紫色部分：素白增补 <em>by milkway</em></li>
+<li>R1其他键位：薰衣草 <em>by 锄头</em></li>
+</ul>
+<p><strong>轴体：</strong>灰木V4</p>
+<p><img src="/images/KBD/image-20230801200953456.jpg" alt="image-20230801200953456"></p>
+<p><img src="/images/KBD/image-20230801201000491.jpg" alt="image-20230801201000491"></p>
+<h2 id="VGN-S99"><a href="#VGN-S99" class="headerlink" title="VGN S99"></a>VGN S99</h2><p>给🐍÷的游戏键盘，看中了VGN的低延迟无线。现在的键圈真的是越来越卷了啊…319的成品能有这个设计和内胆</p>
+<ul>
+<li><strong>轴体：</strong>草莓奶昔 <em>by SaroKeys</em></li>
+<li><strong>键帽：</strong>KCA柠七 <em>by 森美</em></li>
+</ul>
+<p><img src="/images/KBD/image-20230827213720670.jpg" alt="image-20230827213720670"></p>
+<p><img src="/images/KBD/image-20230827213834842.jpg" alt="image-20230827213834842"></p>
+<p><img src="/images/KBD/image-20230827213829714.jpg" alt="image-20230827213829714"></p>
+<p><img src="/images/KBD/image-20230827213823455.jpg" alt="image-20230827213823455"></p>
+<h2 id="究极无敌复古缝合（半成品）"><a href="#究极无敌复古缝合（半成品）" class="headerlink" title="究极无敌复古缝合（半成品）"></a>究极无敌复古缝合（半成品）</h2><p>缝合了Hans80的正面与Class80的背面、还有Suit80内胆（<del>三个原版都买不起</del>），属于是究极缝合</p>
+<p>打印出来的外壳有误差很大用不了，暂且搁置了。·        `</p>
+<p><img src="/images/KBD/5ef4dc1c17fa0028dfcfc1f7bc2ee2b.jpg" alt="5ef4dc1c17fa0028dfcfc1f7bc2ee2b"></p>
+<p><img src="/images/KBD/ffa4cd21c9724fef3998dae3d0448b2.jpg" alt="ffa4cd21c9724fef3998dae3d0448b2"></p>
+<h2 id="INFI-75-Keepout"><a href="#INFI-75-Keepout" class="headerlink" title="INFI 75 Keepout"></a>INFI 75 Keepout</h2><p>实验室买的量产，键帽配色不错，设计也不错，就是屏幕是败笔、以及外壳质量不太好。</p>
+<ul>
+<li>换 EPDM 底棉 &amp; FR4 定位板</li>
+<li><strong>轴体：</strong>心海轴 <em>by HMX</em></li>
+</ul>
+<p><img src="/images/KBD/image-20240618161314596.jpg" alt="image-20240618161314596"></p>
+<p><img src="/images/KBD/image-20240618161329599.jpg" alt="image-20240618161329599"></p>
+<h2 id="Yu75"><a href="#Yu75" class="headerlink" title="Yu75"></a>Yu75</h2><p>挺好看的一把黑胡桃木坨坨，去掉底棉声音不差的同时手感很弹，可惜乌拉的三模 PCB 太拉了。</p>
+<ul>
+<li><strong>轴体：</strong>鲸落轴 <em>by 狼蛛&amp;SWK</em></li>
+<li><strong>键帽：</strong>宇航员 <em>by KeyBye Lab</em></li>
+</ul>
+<p><img src="/images/KBD/image-20240618161534633.jpg" alt="image-20240618161534633"></p>
+<p><img src="/images/KBD/image-20240618161549252.jpg" alt="image-20240618161549252"></p>
+<h2 id="YuPad-amp-Yu65"><a href="#YuPad-amp-Yu65" class="headerlink" title="YuPad  &amp; Yu65"></a>YuPad  &amp; Yu65</h2><p>参与开团的两把键盘，虽然只做了 PCB 但也算是圆满了，捞到了自己在键圈的第一桶金（估计也是最后一桶了）</p>
+<p><img src="/images/KBD/image-20240618161717869.jpg" alt="image-20240618161717869"></p>
+<p><img src="/images/KBD/image-20240618161738697.jpg" alt="image-20240618161738697"></p>
+<p><img src="/images/KBD/image-20240618161800578.jpg" alt="image-20240618161800578"></p>
+<h2 id="Neo-80"><a href="#Neo-80" class="headerlink" title="Neo 80"></a>Neo 80</h2><p>进入 Neo 时代咯，OG 的内胆和亚麻喷涂白真的很让人喜欢。</p>
+<ul>
+<li><strong>轴体：</strong>HG Black <em>by Cherry</em></li>
+<li><strong>键帽1：</strong>C64 Dark <em>by AlephKeys</em></li>
+<li><strong>键帽2</strong>：Game1989 <em>by TUTKeys</em></li>
+</ul>
+<p><img src="/images/KBD/image-20240618162058033.jpg" alt="image-20240618162058033"></p>
+<p><img src="/images/KBD/image-20240618162109595.jpg" alt="image-20240618162109595"></p>
+<p><img src="/images/KBD/image-20240618162130858.jpg" alt="image-20240618162130858"></p>
+<p><img src="/images/KBD/image-20240618162141605.jpg" alt="image-20240618162141605"></p>
+<p><img src="/images/KBD/image-20240618162149648.jpg" alt="image-20240618162149648"></p>
+<h2 id="Purest-75"><a href="#Purest-75" class="headerlink" title="Purest 75"></a>Purest 75</h2><p>典🐶的恶心人巨制，买到老赖的键盘了…不过氪总的结构设计还是有手的。</p>
+<p><strong>轴体：</strong>紫薇轴 <em>by WOB&amp;HMX</em></p>
+<p><strong>键帽：</strong>无刻混灯 <em>by 爱菲</em></p>
+<p><img src="/images/KBD/image-20240619100206110.png" alt="image-20240619100206110"></p>
+<h2 id="Crush-80"><a href="#Crush-80" class="headerlink" title="Crush 80"></a>Crush 80</h2><p>量产铝坨坨，不得不说619成品的价格，这个设计和质感都非常超模，可惜就是营销和售后都太过恶心…</p>
+<p><img src="/images/KBD/image-20240618162254159.jpg" alt="image-20240618162254159"></p>
+<p><img src="/images/KBD/image-20240618162302566.jpg" alt="image-20240618162302566"></p>
+<h2 id="Neo-Ergo"><a href="#Neo-Ergo" class="headerlink" title="Neo Ergo"></a>Neo Ergo</h2><p>亚克力 spring 以后再次尝试 alice 配列，指法进步了用起来还挺顺手。Neo 一贯的简约质感外观真的很讨喜，手机拍不出来这个深空灰的美，只好借舍友的相机来拍了。</p>
+<ul>
+<li>轴体：HG雪松轴 <em>by 7min Lab&amp;地瓜外设&amp;力驰创新</em></li>
+<li>键帽：宇航员 <em>by KeyBye Lab</em></li>
+</ul>
+<p><img src="/images/KBD/image-20240618162552127.jpg" alt="image-20240618162552127"></p>
+<p><img src="/images/KBD/image-20240618162649520.jpg" alt="image-20240618162649520"></p>
+<h2 id="Mad60HE"><a href="#Mad60HE" class="headerlink" title="Mad60HE"></a>Mad60HE</h2><p>成为瓦批以后，发现在松手急停这块磁轴还是非常有用的，于是入了一把入门级别的磁轴 Mad60HE。</p>
+<ul>
+<li>轴体：磁珀轴pro</li>
+<li>键帽：爱菲百灯拼的黑灯</li>
+</ul>
+<p><img src="/images/KBD/image-20241118124717470.png" alt="image-20241118124717470"></p>
+<h3 id="改Null64外壳"><a href="#改Null64外壳" class="headerlink" title="改Null64外壳"></a>改Null64外壳</h3><p>这个仿wooting的飘带+斜坡设计外壳实在是受不了（至今无法理解wooting的价格和外观，可能是我不够潮吧^ ^），而这套pcb是标准GH60孔位的，所以就物色了很久外壳，最后意外发现之前用过的NULL64支持，然后在闲鱼收了一个巴西花梨木的套件。</p>
+<p><img src="/images/KBD/image-20241118125709699.png" alt="image-20241118125709699"></p>
+<p><img src="/images/KBD/image-20241118125714965.png" alt="image-20241118125714965"></p>
+<p>键帽就没换了，只能说勉勉强强不是很搭也不丑，附上一张牢钊的NULL64的搭配：</p>
+<p><img src="/images/KBD/image-20241118125749067.png" alt="image-20241118125749067"></p>
+<h2 id="QK80mk2"><a href="#QK80mk2" class="headerlink" title="QK80mk2"></a>QK80mk2</h2><p>qk在QK65v2、QK75N、QK100等键盘中对屏幕像是魔怔了，强行把质感和设计与量产无异的屏幕加到键盘上，显得很廉价和生硬。所以本来买的是Taku65 reboot，打算玩一玩小屏幕的。结果过程中出了个QK80mk2，感觉屏幕的设计和功能性完爆之前的QK，再加上Taku的发货时间、补偿方案不合理、以及可以zf官方转单等，出掉了taku65上小黄鱼收了吧QK80mk2。</p>
+<ul>
+<li>轴体：心海轴 <em>by hmx</em></li>
+<li>键帽：百灯 <em>by amk</em></li>
+</ul>
+<p><img src="/images/KBD/image-20241118130300153.png" alt="image-20241118130300153"></p>
+<p><img src="/images/KBD/image-20241118130313959.png" alt="image-20241118130313959"></p>
+<p><img src="/images/KBD/image-20241118130321259.png" alt="image-20241118130321259"></p>
+<p><img src="/images/KBD/image-20241118130341327.png" alt="image-20241118130341327"></p>
+<h2 id="nano68"><a href="#nano68" class="headerlink" title="nano68"></a>nano68</h2><p>在入了磁轴而且打瓦越来越熟练以后，打算把Mad60HE送给某🐷，然后自己入一把其他的磁轴。</p>
+<p>一开始考虑的是小蜜蜂的Made68，但是塑料外壳卖899的价格，以及最难绷的是：灯带只支持单色光，想要其他颜色的灯光需要79块钱买一个半透明灯罩？只能说小蜜蜂还是那个1000块钱买一个Mojo的小蜜蜂。</p>
+<p>然后在小蜜蜂没有什么用的律师函下，nano68诞生了，光是不用换灯罩可以自定义RGB色彩、甚至还能有彩虹流光效果这一点就薄纱前者了。</p>
+<ul>
+<li>轴体：封底磁银轴 &amp; 少数万磁王轴</li>
+<li>键帽：C64 Dark <em>by alephkeys</em></li>
+</ul>
+<p><img src="/images/KBD/image-20241118130813272.png" alt="image-20241118130813272"></p>
+<p>一开始一位这样一把主打RGB灯箱外观的键盘需要搭配科技风键帽，没想到尝试性的换上了我的传家宝C64Dark以后居然有种莫名的高级感。</p>
+<p><img src="/images/KBD/image-20241118130739582.png" alt="image-20241118130739582"></p>
+<p><img src="/images/KBD/image-20241118130748171.png" alt="image-20241118130748171"></p>
+<h2 id="lucky65v2"><a href="#lucky65v2" class="headerlink" title="lucky65v2"></a>lucky65v2</h2><p>200出头的快拆铝，海棠紫的颜色在量产里面算比较好看的</p>
+<ul>
+<li>轴体：hg雪松轴 &amp; hmx雪花轴</li>
+<li>键帽：薄荷糖紫色希腊文</li>
+</ul>
+<p><img src="/images/KBD/301736338021_.pic_hd.jpg" alt="301736338021_.pic_hd"></p>
+<p><img src="/images/KBD/311736338023_.pic_hd.jpg" alt="311736338023_.pic_hd"></p>
+<p><img src="/images/KBD/321736338030_.pic_hd.jpg" alt="321736338030_.pic_hd"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2023/08/27/KBD/">https://blog.boulevard.asia/2023/08/27/KBD/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E5%AE%A2%E5%88%B6%E5%8C%96%E9%94%AE%E7%9B%98/"># 客制化键盘</a>
+                    
+                        <a href="/tags/DIY/"># DIY</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/11/09/Linux%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/">Linux远程桌面</a>
+            
+            
+            <a class="next" rel="next" href="/2023/06/30/LOL%E5%8F%B0%E6%9C%8D%E4%BB%A3%E6%8C%82/">LOL台服代挂</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
