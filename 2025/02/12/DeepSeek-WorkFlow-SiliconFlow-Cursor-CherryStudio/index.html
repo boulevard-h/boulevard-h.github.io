@@ -13,7 +13,7 @@
 
 
 
-<title>HelloWorld &amp; 建站教程 | Boulevard&#39;s Blog</title>
+<title>使用SiliconFlow API+Cursor+CherryStudio搭建DeepSeek AI工作流 | Boulevard&#39;s Blog</title>
 
 
 
@@ -200,7 +200,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">HelloWorld &amp; 建站教程</h1>
+            <h1 class="post-title">使用SiliconFlow API+Cursor+CherryStudio搭建DeepSeek AI工作流</h1>
             
                 <div class="post-meta">
                     
@@ -209,14 +209,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">十月 12, 2024&nbsp;&nbsp;11:39:16</a>
+                        Date: <a href="#">二月 12, 2025&nbsp;&nbsp;11:06:43</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">博客搭建</a>
+                                <a href="/categories/%E6%9D%82%E9%A1%B9/">杂项</a>
                             
                         </span>
                     
@@ -225,23 +225,24 @@
         </header>
 
         <div class="post-content">
-            <h2 id="1-简要介绍"><a href="#1-简要介绍" class="headerlink" title="1. 简要介绍"></a>1. 简要介绍</h2><p><a target="_blank" rel="noopener" href="https://hexo.nodejs.cn/">hexo</a> 是一个强大的博客框架项目，将 Markdown 文档转化为博客网站，并且拥有大量自定义主题模板可以使用。在安装了 hexo 以后，只需要在 hexo 博客目录下简单的执行一行 <code>hexo server</code> 命令即可生成网站，并且在本地的 4000 端口访问它。</p>
-<p>因此，本教程的重点不是如何安装和使用 hexo，而是如何把你的 hexo 页面部署在网站上。</p>
-<p>GitHub Pages 就是一个不错的部署平台，hexo 官方支持 GitHub 一键部署，可以直接将生成的网页文件推送到 GitHub Pages 对应的仓库中去。</p>
-<p>但是 GitHub Pages 也有一些缺点：</p>
-<ol>
-<li>国内访问速度慢（emmm</li>
-<li>源码和静态网站分离，也就是说，被我们 push 到 GitHub 仓库中的只有静态网站，而没有你的 hexo 目录</li>
-</ol>
-<p>第二个问题可以使用 GitHub Actions 解决。使用两个仓库（或者一个仓库的两个分支也可），一个存储 hexo 源码，一个存储静态网站。然后在 hexo 源码仓库中写一个 actions 脚本，当推送新内容的时候，自动运行 hexo 生成静态网站并且推送到另一个仓库。</p>
-<p>而更好的方法是使用 Netlify，其在国内的访问速度比 GitHub Pages 快，而且非常方便：与你的 GitHub hexo 源码仓库关联以后，会自动拉取其源码，然后自动部署生成网站。</p>
-<p><strong>唯一美中不足的是，在我使用了两年的 Netlify 后，我的账号莫名其妙被 ban 了</strong>，所以本网站目前又迁移回了 GitHub Pages。</p>
-<h2 id="2-GitHub-Pages-配置教程"><a href="#2-GitHub-Pages-配置教程" class="headerlink" title="2. GitHub Pages 配置教程"></a>2. GitHub Pages 配置教程</h2><p>follow 这篇博客即可，实测没有问题：</p>
-<p><a target="_blank" rel="noopener" href="https://tech.yemengstar.com/hexo-tutorial-deploy-githubpages-beginner/">HEXO系列教程 | 使用GitHub部署静态博客HEXO | 小白向教程 – 夜梦星尘の折腾日记 (yemengstar.com)</a></p>
-<p><a target="_blank" rel="noopener" href="https://tech.yemengstar.com/hexo-tutorial-use-your-domain-beginner/">HEXO系列教程 | 为HEXO绑定自己的域名 | 小白向教程 – 夜梦星尘の折腾日记 (yemengstar.com)</a></p>
-<h2 id="3-Netlify-配置教程"><a href="#3-Netlify-配置教程" class="headerlink" title="3. Netlify 配置教程"></a>3. Netlify 配置教程</h2><p>如果有幸能够注册 Netlify 账号而且不被 ban 的话，可以按照这个教程配置：</p>
-<p><a target="_blank" rel="noopener" href="https://blog.cuijiacai.com/blog-building/">个人博客搭建教程 | 爱扑bug的熊 (cuijiacai.com)</a></p>
-<p>但是没有配置其中的CloudWare CDN加速，Netlify自带的已经够用</p>
+            <h2 id="1-API-的选择与获取"><a href="#1-API-的选择与获取" class="headerlink" title="1. API 的选择与获取"></a>1. API 的选择与获取</h2><p>目前使用过的 API 平台有三种：</p>
+<ul>
+<li>ds 官方：服务器老寄、目前已经限制了 API 账户的充值</li>
+<li>腾讯云：暂时免费（2.25前）、但是其 API 不知为何在 Cursor 中调用报错</li>
+<li>SiliconFlow：V3 8元/1M token，R1 16元/1M token</li>
+</ul>
+<p>处于可用性的考虑，目前只能选择 SiliconFlow</p>
+<p><a target="_blank" rel="noopener" href="https://cloud.siliconflow.cn/models">https://cloud.siliconflow.cn/models</a> 进入 SiliconFlow 网站，注册、实名、然后创建 API Key 即可，记得创建两个 API Key，分别给两个软件使用</p>
+<p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212111702905.png" alt="image-20250212111702905"></p>
+<h2 id="2-Cherry-Studio-配置"><a href="#2-Cherry-Studio-配置" class="headerlink" title="2. Cherry Studio 配置"></a>2. Cherry Studio 配置</h2><p>Cherry Studio 是一个支持多模型的 AI 助手客户端，只需要添加 API Key 即可对话</p>
+<p>在 <a target="_blank" rel="noopener" href="https://cherry-ai.com/">https://cherry-ai.com/</a> 下载和安装即可，进入软件后，在设置-模型服务中找到硅基流动（SiliconFlow）的服务添加 API Key 即可，设置默认模型以后，就可以和 deepseek 对话</p>
+<p>如果你想先白嫖一段免费的腾讯云，Cherry Studio 也支持添加自定义的 API，选择添加，提供商名字可以取名叫”腾讯云deepseek“，提供商类型选择 OpenAI，API 地址为：<a target="_blank" rel="noopener" href="https://api.lkeap.cloud.tencent.com，然后添加">https://api.lkeap.cloud.tencent.com，然后添加</a> deepseek-r1 和 deepseek-v3 模型即可</p>
+<p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212112439082.png" alt="image-20250212112439082"></p>
+<h2 id="3-Cursor-配置"><a href="#3-Cursor-配置" class="headerlink" title="3. Cursor 配置"></a>3. Cursor 配置</h2><p>Cursor 是基于 vscode 开发的 AI IDE，其 AI 功能比 vscode 更加强大，例如报错以后一键对报错提问等。Cursor 支持 GPT-o1、Claude-3.5、deepseek 等模型，但是使用官方提供的模型服务需要 20 美刀一个月（没有 visa 或 PayPal 等的话即使愿意出钱也会被卡在支付方式上），所以选择不开通官方会员，而是使用自己的 API</p>
+<p>在 Cursor-Model 中，首先取消勾选所有自带的模型（包括自带的 deepseek），添加两个模型：deepseek-ai/DeepSeek-R1和deepseek-ai/DeepSeek-V3</p>
+<p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212113359216.png" alt="image-20250212113359216"></p>
+<p>然后在下方的 OpenAI API Key 中，修改 Override OpenAI Base URL 为 <a target="_blank" rel="noopener" href="https://api.siliconflow.cn/v1，然后在上方填入自己的">https://api.siliconflow.cn/v1，然后在上方填入自己的</a> API Key，如果能 Verify 通过的话就能正常使用了</p>
+<p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212113427747.png" alt="image-20250212113427747"></p>
 
         </div>
 
@@ -256,7 +257,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="https://blog.boulevard.asia/2024/10/12/HelloWorld&%E5%BB%BA%E7%AB%99%E6%95%99%E7%A8%8B/">https://blog.boulevard.asia/2024/10/12/HelloWorld&%E5%BB%BA%E7%AB%99%E6%95%99%E7%A8%8B/</a></span>
+                        <span><a href="https://blog.boulevard.asia/2025/02/12/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/">https://blog.boulevard.asia/2025/02/12/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/</a></span>
                     </p>
                 
                 
@@ -279,10 +280,6 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
-                    
-                        <a href="/tags/%E7%AE%80%E6%98%93%E6%95%99%E7%A8%8B/"># 简易教程</a>
-                    
-                        
                 </span>
             </div>
             <div>
@@ -293,10 +290,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2025/02/12/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/">使用SiliconFlow API+Cursor+CherryStudio搭建DeepSeek AI工作流</a>
             
-            
-            <a class="next" rel="next" href="/2024/10/11/Zotero-Setting/">Zotero Setting</a>
+            <a class="next" rel="next" href="/2024/10/12/HelloWorld&%E5%BB%BA%E7%AB%99%E6%95%99%E7%A8%8B/">HelloWorld & 建站教程</a>
             
         </section>
 
