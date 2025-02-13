@@ -13,7 +13,7 @@
 
 
 
-<title>使用SiliconFlow API+Cursor+CherryStudio搭建DeepSeek AI工作流 | Boulevard&#39;s Blog</title>
+<title>Cursor 免费试用无线续杯教程 | Boulevard&#39;s Blog</title>
 
 
 
@@ -200,7 +200,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">使用SiliconFlow API+Cursor+CherryStudio搭建DeepSeek AI工作流</h1>
+            <h1 class="post-title">Cursor 免费试用无线续杯教程</h1>
             
                 <div class="post-meta">
                     
@@ -209,7 +209,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">二月 12, 2025&nbsp;&nbsp;11:06:43</a>
+                        Date: <a href="#">二月 13, 2025&nbsp;&nbsp;12:28:20</a>
                         </span>
                     
                     
@@ -225,31 +225,19 @@
         </header>
 
         <div class="post-content">
-            <h2 id="1-API-的选择与获取"><a href="#1-API-的选择与获取" class="headerlink" title="1. API 的选择与获取"></a>1. API 的选择与获取</h2><p>目前使用过的 API 平台有三种：</p>
+            <p>思路：用临时邮箱白嫖cursor的新用户14天免费注册，然而cursor对这种行为有所防范，限制了机器码，所以需要在换邮箱之前修改机器码</p>
+<p>用到的工具：</p>
 <ul>
-<li>ds 官方：服务器老寄、目前已经限制了 API 账户的充值</li>
-<li>腾讯云：暂时免费（2.25前）、但是其 API 不知为何在 Cursor 中调用报错</li>
-<li>SiliconFlow：V3 8元/1M token，R1 16元/1M token</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/chengazhen/cursor-auto-free">https://github.com/chengazhen/cursor-auto-free</a> 修改机器码</li>
+<li><a target="_blank" rel="noopener" href="https://smailpro.com/">https://smailpro.com/</a> 临时邮箱</li>
 </ul>
-<p>处于可用性的考虑，目前只能选择 SiliconFlow</p>
-<p><a target="_blank" rel="noopener" href="https://cloud.siliconflow.cn/models">https://cloud.siliconflow.cn/models</a> 进入 SiliconFlow 网站，注册、实名、然后创建 API Key 即可，记得创建两个 API Key，分别给两个软件使用</p>
-<p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212111702905.png" alt="image-20250212111702905"></p>
-<h2 id="2-Cherry-Studio-配置"><a href="#2-Cherry-Studio-配置" class="headerlink" title="2. Cherry Studio 配置"></a>2. Cherry Studio 配置</h2><p>Cherry Studio 是一个支持多模型的 AI 助手客户端，只需要添加 API Key 即可对话</p>
-<p>在 <a target="_blank" rel="noopener" href="https://cherry-ai.com/">https://cherry-ai.com/</a> 下载和安装即可，进入软件后，在设置-模型服务中找到硅基流动（SiliconFlow）的服务添加 API Key 即可，设置默认模型以后，就可以和 deepseek 对话</p>
-<p>如果你想先白嫖一段免费的腾讯云，Cherry Studio 也支持添加自定义的 API，选择添加，提供商名字可以取名叫”腾讯云deepseek“，提供商类型选择 OpenAI，API 地址为：<a target="_blank" rel="noopener" href="https://api.lkeap.cloud.tencent.com，然后添加">https://api.lkeap.cloud.tencent.com，然后添加</a> deepseek-r1 和 deepseek-v3 模型即可</p>
-<p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212112439082.png" alt="image-20250212112439082"></p>
-<h2 id="3-Cursor-配置"><a href="#3-Cursor-配置" class="headerlink" title="3. Cursor 配置"></a>3. Cursor 配置</h2><p>Cursor 是基于 vscode 开发的 AI IDE，其 AI 功能比 vscode 更加强大，Cursor 的辅助功能大致分为三部分：</p>
-<ul>
-<li>Cursor Tab：类似 VSCode Copilot 的自动补全</li>
-<li>Chat：在窗口右侧换出一个对话窗口，和正常的ChatGPT一致，但是可以更方便的将代码文件、报错信息等输入到Chat中</li>
-<li>Edit：选中一部分代码，输入指令自动修改代码</li>
-</ul>
-<p><strong>注：</strong>Chat&amp;Edit 功能都支持使用自定义API，但是 Cursor Tab 只能使用官方提供的模型，因此<strong>使用 API 不能完全代替 Cursor 会员</strong>的所有功能，还是花钱开会员最省心（或者实在觉得20美刀一个月负担太大的话，可以折腾一下免费使用无线续杯等操作</p>
-<p>下面进入正题，将 deepseek API 接入到 cursor chat&amp;editor 中：</p>
-<p>在 Cursor-Model 中，首先取消勾选所有自带的模型（包括自带的 deepseek），添加两个模型：deepseek-ai/DeepSeek-R1和deepseek-ai/DeepSeek-V3</p>
-<p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212113359216.png" alt="image-20250212113359216"></p>
-<p>然后在下方的 OpenAI API Key 中，修改 Override OpenAI Base URL 为 <a target="_blank" rel="noopener" href="https://api.siliconflow.cn/v1，然后在上方填入自己的">https://api.siliconflow.cn/v1，然后在上方填入自己的</a> API Key，如果能 Verify 通过的话就能正常使用了</p>
-<p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212113427747.png" alt="image-20250212113427747"></p>
+<h2 id="1-修改机器码"><a href="#1-修改机器码" class="headerlink" title="1. 修改机器码"></a>1. 修改机器码</h2><p>Windows：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">irm</span> https://aizaozao.com/accelerate.php/https://raw.githubusercontent.com/yuaotian/go<span class="literal">-cursor-help</span>/refs/heads/master/scripts/run/cursor_win_id_modifier.ps1 | <span class="built_in">iex</span></span><br></pre></td></tr></table></figure>
+<p>Mac：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://aizaozao.com/accelerate.php/https://raw.githubusercontent.com/yuaotian/go-cursor-help/refs/heads/master/scripts/run/cursor_mac_id_modifier.sh| sudo bash</span><br></pre></td></tr></table></figure>
+<p>运行以后，大概会出现：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[INFO] 成功修改文件: Cursor.app/Contents/Resources/app/out/vs/code/node/cliProcessMain.js</span><br><span class="line">[INFO] 重新签名应用...</span><br><span class="line">[INFO] 正在关闭 Cursor...</span><br><span class="line">[INFO] 创建应用备份: /Applications/Cursor.backup.20250213_121254.app</span><br><span class="line">[INFO] 安装修改版应用...</span><br><span class="line">[INFO] Cursor 主程序文件修改完成！原版备份在: /Applications/Cursor.backup.20250213_121254.app</span><br><span class="line"></span><br><span class="line">[WARN] 是否要修改MAC地址？</span><br><span class="line">0) 否 - 保持默认设置 (默认)</span><br><span class="line">1) 是 - 修改MAC地址</span><br><span class="line">请输入选择 [0-1] (默认 0): [INFO] 已跳过MAC地址修改</span><br><span class="line"></span><br><span class="line">[INFO] 文件结构:</span><br><span class="line">/Users/XXX/Library/Application Support/Cursor/User/globalStorage</span><br><span class="line">├── globalStorage</span><br><span class="line">│   ├── storage.json (已修改)</span><br><span class="line">│   └── backups</span><br><span class="line">│       └── storage.json.backup_20250213_121253</span><br><span class="line">│       └── system_id.backup_20250213_121253</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[INFO] 正在禁用 Cursor 自动更新...</span><br><span class="line">如果需要恢复自动更新，可以手动删除文件：</span><br><span class="line">/Users/XXX/Library/Application Support/Caches/cursor-updater</span><br><span class="line"></span><br><span class="line">[INFO] 成功禁用自动更新</span><br><span class="line"></span><br><span class="line">[INFO] 验证方法：</span><br><span class="line">运行命令：<span class="built_in">ls</span> -l <span class="string">&quot;/Users/XXX/Library/Application Support/Caches/cursor-updater&quot;</span></span><br><span class="line">确认文件权限显示为：r--r--r--</span><br><span class="line"></span><br><span class="line">[INFO] 完成后请重启 Cursor</span><br><span class="line">[INFO] 请重启 Cursor 以应用新的配置</span><br></pre></td></tr></table></figure>
+<h2 id="2-注册新邮箱"><a href="#2-注册新邮箱" class="headerlink" title="2. 注册新邮箱"></a>2. 注册新邮箱</h2><p>进入 <a target="_blank" rel="noopener" href="https://smailpro.com/，获得一个临时邮箱，进入">https://smailpro.com/，获得一个临时邮箱，进入</a> cursor，退出原有账号，然后用临时邮箱注册登录，临时邮箱的验证码会发送到 smailpro 网页上，注册完毕以后，就可以用这个临时邮箱继续白嫖 14 天 free trial 了</p>
 
         </div>
 
@@ -264,7 +252,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="https://blog.boulevard.asia/2025/02/12/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/">https://blog.boulevard.asia/2025/02/12/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/</a></span>
+                        <span><a href="https://blog.boulevard.asia/2025/02/13/cursor-free-trial/">https://blog.boulevard.asia/2025/02/13/cursor-free-trial/</a></span>
                     </p>
                 
                 
@@ -297,10 +285,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2025/02/13/cursor-free-trial/">Cursor 免费试用无线续杯教程</a>
             
-            
-            <a class="next" rel="next" href="/2024/10/12/HelloWorld&%E5%BB%BA%E7%AB%99%E6%95%99%E7%A8%8B/">HelloWorld & 建站教程</a>
+            <a class="next" rel="next" href="/2025/02/12/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/">使用SiliconFlow API+Cursor+CherryStudio搭建DeepSeek AI工作流</a>
             
         </section>
 
