@@ -238,7 +238,14 @@
 <p>在 <a target="_blank" rel="noopener" href="https://cherry-ai.com/">https://cherry-ai.com/</a> 下载和安装即可，进入软件后，在设置-模型服务中找到硅基流动（SiliconFlow）的服务添加 API Key 即可，设置默认模型以后，就可以和 deepseek 对话</p>
 <p>如果你想先白嫖一段免费的腾讯云，Cherry Studio 也支持添加自定义的 API，选择添加，提供商名字可以取名叫”腾讯云deepseek“，提供商类型选择 OpenAI，API 地址为：<a target="_blank" rel="noopener" href="https://api.lkeap.cloud.tencent.com，然后添加">https://api.lkeap.cloud.tencent.com，然后添加</a> deepseek-r1 和 deepseek-v3 模型即可</p>
 <p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212112439082.png" alt="image-20250212112439082"></p>
-<h2 id="3-Cursor-配置"><a href="#3-Cursor-配置" class="headerlink" title="3. Cursor 配置"></a>3. Cursor 配置</h2><p>Cursor 是基于 vscode 开发的 AI IDE，其 AI 功能比 vscode 更加强大，例如报错以后一键对报错提问等。Cursor 支持 GPT-o1、Claude-3.5、deepseek 等模型，但是使用官方提供的模型服务需要 20 美刀一个月（没有 visa 或 PayPal 等的话即使愿意出钱也会被卡在支付方式上），所以选择不开通官方会员，而是使用自己的 API</p>
+<h2 id="3-Cursor-配置"><a href="#3-Cursor-配置" class="headerlink" title="3. Cursor 配置"></a>3. Cursor 配置</h2><p>Cursor 是基于 vscode 开发的 AI IDE，其 AI 功能比 vscode 更加强大，Cursor 的辅助功能大致分为三部分：</p>
+<ul>
+<li>Cursor Tab：类似 VSCode Copilot 的自动补全</li>
+<li>Chat：在窗口右侧换出一个对话窗口，和正常的ChatGPT一致，但是可以更方便的将代码文件、报错信息等输入到Chat中</li>
+<li>Edit：选中一部分代码，输入指令自动修改代码</li>
+</ul>
+<p><strong>注：</strong>Chat&amp;Edit 功能都支持使用自定义API，但是 Cursor Tab 只能使用官方提供的模型，因此<strong>使用 API 不能完全代替 Cursor 会员</strong>的所有功能，还是花钱开会员最省心（或者实在觉得20美刀一个月负担太大的话，可以折腾一下免费使用无线续杯等操作</p>
+<p>下面进入正题，将 deepseek API 接入到 cursor chat&amp;editor 中：</p>
 <p>在 Cursor-Model 中，首先取消勾选所有自带的模型（包括自带的 deepseek），添加两个模型：deepseek-ai/DeepSeek-R1和deepseek-ai/DeepSeek-V3</p>
 <p><img src="/images/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/image-20250212113359216.png" alt="image-20250212113359216"></p>
 <p>然后在下方的 OpenAI API Key 中，修改 Override OpenAI Base URL 为 <a target="_blank" rel="noopener" href="https://api.siliconflow.cn/v1，然后在上方填入自己的">https://api.siliconflow.cn/v1，然后在上方填入自己的</a> API Key，如果能 Verify 通过的话就能正常使用了</p>
