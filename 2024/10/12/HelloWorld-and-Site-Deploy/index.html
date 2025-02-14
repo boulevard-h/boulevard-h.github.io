@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>HelloWorld &amp; 建站教程 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">HelloWorld &amp; 建站教程</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十月 12, 2024&nbsp;&nbsp;11:39:16</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">博客搭建</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="1-简要介绍"><a href="#1-简要介绍" class="headerlink" title="1. 简要介绍"></a>1. 简要介绍</h2><p><a target="_blank" rel="noopener" href="https://hexo.nodejs.cn/">hexo</a> 是一个强大的博客框架项目，将 Markdown 文档转化为博客网站，并且拥有大量自定义主题模板可以使用。在安装了 hexo 以后，只需要在 hexo 博客目录下简单的执行一行 <code>hexo server</code> 命令即可生成网站，并且在本地的 4000 端口访问它。</p>
+<p>因此，本教程的重点不是如何安装和使用 hexo，而是如何把你的 hexo 页面部署在网站上。</p>
+<p>GitHub Pages 就是一个不错的部署平台，hexo 官方支持 GitHub 一键部署，可以直接将生成的网页文件推送到 GitHub Pages 对应的仓库中去。</p>
+<p>但是 GitHub Pages 也有一些缺点：</p>
+<ol>
+<li>国内访问速度慢（emmm</li>
+<li>源码和静态网站分离，也就是说，被我们 push 到 GitHub 仓库中的只有静态网站，而没有你的 hexo 目录</li>
+</ol>
+<p>第二个问题可以使用 GitHub Actions 解决。使用两个仓库（或者一个仓库的两个分支也可），一个存储 hexo 源码，一个存储静态网站。然后在 hexo 源码仓库中写一个 actions 脚本，当推送新内容的时候，自动运行 hexo 生成静态网站并且推送到另一个仓库。</p>
+<p>而更好的方法是使用 Netlify，其在国内的访问速度比 GitHub Pages 快，而且非常方便：与你的 GitHub hexo 源码仓库关联以后，会自动拉取其源码，然后自动部署生成网站。</p>
+<p><strong>唯一美中不足的是，在我使用了两年的 Netlify 后，我的账号莫名其妙被 ban 了</strong>，所以本网站目前又迁移回了 GitHub Pages。</p>
+<h2 id="2-GitHub-Pages-配置教程"><a href="#2-GitHub-Pages-配置教程" class="headerlink" title="2. GitHub Pages 配置教程"></a>2. GitHub Pages 配置教程</h2><p>follow 这篇博客即可，实测没有问题：</p>
+<p><a target="_blank" rel="noopener" href="https://tech.yemengstar.com/hexo-tutorial-deploy-githubpages-beginner/">HEXO系列教程 | 使用GitHub部署静态博客HEXO | 小白向教程 – 夜梦星尘の折腾日记 (yemengstar.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://tech.yemengstar.com/hexo-tutorial-use-your-domain-beginner/">HEXO系列教程 | 为HEXO绑定自己的域名 | 小白向教程 – 夜梦星尘の折腾日记 (yemengstar.com)</a></p>
+<h2 id="3-Netlify-配置教程"><a href="#3-Netlify-配置教程" class="headerlink" title="3. Netlify 配置教程"></a>3. Netlify 配置教程</h2><p>如果有幸能够注册 Netlify 账号而且不被 ban 的话，可以按照这个教程配置：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.cuijiacai.com/blog-building/">个人博客搭建教程 | 爱扑bug的熊 (cuijiacai.com)</a></p>
+<p>但是没有配置其中的CloudWare CDN加速，Netlify自带的已经够用</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2024/10/12/HelloWorld-and-Site-Deploy/">https://blog.boulevard.asia/2024/10/12/HelloWorld-and-Site-Deploy/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2025/02/12/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/">使用SiliconFlow API+Cursor+CherryStudio搭建DeepSeek AI工作流</a>
+            
+            
+            <a class="next" rel="next" href="/2024/10/11/Zotero-Setting/">Zotero Setting</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
