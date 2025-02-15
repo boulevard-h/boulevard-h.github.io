@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>使用SSH反向隧道实现公网IP连接内网SSH服务器</title>
+      <link href="/2025/02/15/ssh-tunnel/"/>
+      <url>/2025/02/15/ssh-tunnel/</url>
+      
+        <content type="html"><![CDATA[<h2 id="0-前言"><a href="#0-前言" class="headerlink" title="0. 前言"></a>0. 前言</h2><p>在使用 SSH 连接内网服务器的时候，由于缺乏公网 IP，只有在同一个内网的服务器可以访问，而且我们的内网 IP 是动态变化的，即使关闭 DHIP 设置固定 IP 也无济于事，很麻烦，所以用一台白嫖的阿里云 2C2G 服务器做中转</p><p><strong>注：把 SSH 端口暴露在公网一定要注意安全，记得使用仅公钥认证登陆等手段</strong></p><h2 id="1-配置过程"><a href="#1-配置过程" class="headerlink" title="1. 配置过程"></a>1. 配置过程</h2><p>首先要在公网和内网服务器都配置好 SSH，保证自己的电脑可以连接</p><p>在公网 SSH 服务器上配置转发：</p><ul><li><p>在 <code>/etc/ssh/sshd_config</code> 中添加：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GatewayPorts <span class="built_in">yes</span>    <span class="comment"># 允许外部访问转发端口</span></span><br><span class="line">TCPKeepAlive <span class="built_in">yes</span>    <span class="comment"># 保持TCP连接</span></span><br><span class="line">ClientAliveInterval 60</span><br></pre></td></tr></table></figure></li><li><p>重启 SSH 服务：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart sshd</span><br></pre></td></tr></table></figure></li><li><p>在阿里云防火墙上打开 2222 端口</p></li></ul><p>在内网 SSH 服务器上打开反向隧道：</p><ul><li><p><code>sudo apt install autossh</code> 安装 autossh</p></li><li><p>建立隧道</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">autossh -M 0 -N -o <span class="string">&quot;ServerAliveInterval 30&quot;</span> -o <span class="string">&quot;ServerAliveCountMax 3&quot;</span> -R 2222:localhost:22 user@云服务器IP</span><br></pre></td></tr></table></figure></li></ul><p>然后就可以通过转发连接了：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 2222 内网user@云服务器IP</span><br></pre></td></tr></table></figure><p>autossh 的窗口需要一直挂着很烦，也可以用 nohup 等在后台执行</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 环境搭建 </category>
+          
+      </categories>
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Cursor 免费试用无线续杯教程</title>
       <link href="/2025/02/13/cursor-free-trial/"/>
       <url>/2025/02/13/cursor-free-trial/</url>

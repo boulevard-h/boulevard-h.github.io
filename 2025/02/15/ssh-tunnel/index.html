@@ -13,7 +13,7 @@
 
 
 
-<title>Cursor 免费试用无线续杯教程 | Boulevard&#39;s Blog</title>
+<title>使用SSH反向隧道实现公网IP连接内网SSH服务器 | Boulevard&#39;s Blog</title>
 
 
 
@@ -200,7 +200,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">Cursor 免费试用无线续杯教程</h1>
+            <h1 class="post-title">使用SSH反向隧道实现公网IP连接内网SSH服务器</h1>
             
                 <div class="post-meta">
                     
@@ -209,7 +209,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">二月 13, 2025&nbsp;&nbsp;12:28:20</a>
+                        Date: <a href="#">二月 15, 2025&nbsp;&nbsp;14:48:38</a>
                         </span>
                     
                     
@@ -225,19 +225,31 @@
         </header>
 
         <div class="post-content">
-            <p>思路：用临时邮箱白嫖cursor的新用户14天免费注册，然而cursor对这种行为有所防范，限制了机器码，所以需要在换邮箱之前修改机器码</p>
-<p>用到的工具：</p>
+            <h2 id="0-前言"><a href="#0-前言" class="headerlink" title="0. 前言"></a>0. 前言</h2><p>在使用 SSH 连接内网服务器的时候，由于缺乏公网 IP，只有在同一个内网的服务器可以访问，而且我们的内网 IP 是动态变化的，即使关闭 DHIP 设置固定 IP 也无济于事，很麻烦，所以用一台白嫖的阿里云 2C2G 服务器做中转</p>
+<p><strong>注：把 SSH 端口暴露在公网一定要注意安全，记得使用仅公钥认证登陆等手段</strong></p>
+<h2 id="1-配置过程"><a href="#1-配置过程" class="headerlink" title="1. 配置过程"></a>1. 配置过程</h2><p>首先要在公网和内网服务器都配置好 SSH，保证自己的电脑可以连接</p>
+<p>在公网 SSH 服务器上配置转发：</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/chengazhen/cursor-auto-free">https://github.com/chengazhen/cursor-auto-free</a> 修改机器码</li>
-<li><a target="_blank" rel="noopener" href="https://smailpro.com/">https://smailpro.com/</a> 临时邮箱</li>
+<li><p>在 <code>/etc/ssh/sshd_config</code> 中添加：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GatewayPorts <span class="built_in">yes</span>    <span class="comment"># 允许外部访问转发端口</span></span><br><span class="line">TCPKeepAlive <span class="built_in">yes</span>    <span class="comment"># 保持TCP连接</span></span><br><span class="line">ClientAliveInterval 60</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重启 SSH 服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart sshd</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在阿里云防火墙上打开 2222 端口</p>
+</li>
 </ul>
-<h2 id="1-修改机器码"><a href="#1-修改机器码" class="headerlink" title="1. 修改机器码"></a>1. 修改机器码</h2><p>Windows：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">irm</span> https://aizaozao.com/accelerate.php/https://raw.githubusercontent.com/yuaotian/go<span class="literal">-cursor-help</span>/refs/heads/master/scripts/run/cursor_win_id_modifier.ps1 | <span class="built_in">iex</span></span><br></pre></td></tr></table></figure>
-<p>Mac：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://aizaozao.com/accelerate.php/https://raw.githubusercontent.com/yuaotian/go-cursor-help/refs/heads/master/scripts/run/cursor_mac_id_modifier.sh| sudo bash</span><br></pre></td></tr></table></figure>
-<p>运行以后，大概会出现：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[INFO] 成功修改文件: Cursor.app/Contents/Resources/app/out/vs/code/node/cliProcessMain.js</span><br><span class="line">[INFO] 重新签名应用...</span><br><span class="line">[INFO] 正在关闭 Cursor...</span><br><span class="line">[INFO] 创建应用备份: /Applications/Cursor.backup.20250213_121254.app</span><br><span class="line">[INFO] 安装修改版应用...</span><br><span class="line">[INFO] Cursor 主程序文件修改完成！原版备份在: /Applications/Cursor.backup.20250213_121254.app</span><br><span class="line"></span><br><span class="line">[WARN] 是否要修改MAC地址？</span><br><span class="line">0) 否 - 保持默认设置 (默认)</span><br><span class="line">1) 是 - 修改MAC地址</span><br><span class="line">请输入选择 [0-1] (默认 0): [INFO] 已跳过MAC地址修改</span><br><span class="line"></span><br><span class="line">[INFO] 文件结构:</span><br><span class="line">/Users/XXX/Library/Application Support/Cursor/User/globalStorage</span><br><span class="line">├── globalStorage</span><br><span class="line">│   ├── storage.json (已修改)</span><br><span class="line">│   └── backups</span><br><span class="line">│       └── storage.json.backup_20250213_121253</span><br><span class="line">│       └── system_id.backup_20250213_121253</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[INFO] 正在禁用 Cursor 自动更新...</span><br><span class="line">如果需要恢复自动更新，可以手动删除文件：</span><br><span class="line">/Users/XXX/Library/Application Support/Caches/cursor-updater</span><br><span class="line"></span><br><span class="line">[INFO] 成功禁用自动更新</span><br><span class="line"></span><br><span class="line">[INFO] 验证方法：</span><br><span class="line">运行命令：<span class="built_in">ls</span> -l <span class="string">&quot;/Users/XXX/Library/Application Support/Caches/cursor-updater&quot;</span></span><br><span class="line">确认文件权限显示为：r--r--r--</span><br><span class="line"></span><br><span class="line">[INFO] 完成后请重启 Cursor</span><br><span class="line">[INFO] 请重启 Cursor 以应用新的配置</span><br></pre></td></tr></table></figure>
-<h2 id="2-注册新邮箱"><a href="#2-注册新邮箱" class="headerlink" title="2. 注册新邮箱"></a>2. 注册新邮箱</h2><p>进入 <a target="_blank" rel="noopener" href="https://smailpro.com/，获得一个临时邮箱，进入">https://smailpro.com/，获得一个临时邮箱，进入</a> cursor，退出原有账号，然后用临时邮箱注册登录，临时邮箱的验证码会发送到 smailpro 网页上，注册完毕以后，就可以用这个临时邮箱继续白嫖 14 天 free trial 了</p>
+<p>在内网 SSH 服务器上打开反向隧道：</p>
+<ul>
+<li><p><code>sudo apt install autossh</code> 安装 autossh</p>
+</li>
+<li><p>建立隧道</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">autossh -M 0 -N -o <span class="string">&quot;ServerAliveInterval 30&quot;</span> -o <span class="string">&quot;ServerAliveCountMax 3&quot;</span> -R 2222:localhost:22 user@云服务器IP</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>然后就可以通过转发连接了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 2222 内网user@云服务器IP</span><br></pre></td></tr></table></figure>
+<p>autossh 的窗口需要一直挂着很烦，也可以用 nohup 等在后台执行</p>
 
         </div>
 
@@ -252,7 +264,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="https://blog.boulevard.asia/2025/02/13/cursor-free-trial/">https://blog.boulevard.asia/2025/02/13/cursor-free-trial/</a></span>
+                        <span><a href="https://blog.boulevard.asia/2025/02/15/ssh-tunnel/">https://blog.boulevard.asia/2025/02/15/ssh-tunnel/</a></span>
                     </p>
                 
                 
@@ -285,10 +297,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2025/02/15/ssh-tunnel/">使用SSH反向隧道实现公网IP连接内网SSH服务器</a>
             
-            
-            <a class="next" rel="next" href="/2025/02/12/DeepSeek-WorkFlow-SiliconFlow-Cursor-CherryStudio/">使用SiliconFlow API+Cursor+CherryStudio搭建DeepSeek AI工作流</a>
+            <a class="next" rel="next" href="/2025/02/13/cursor-free-trial/">Cursor 免费试用无线续杯教程</a>
             
         </section>
 
