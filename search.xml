@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>U盘文件系统损坏数据抢救</title>
+      <link href="/2025/07/09/usb-store-data-recovery/"/>
+      <url>/2025/07/09/usb-store-data-recovery/</url>
+      
+        <content type="html"><![CDATA[<p>U盘插入后提示：</p><blockquote><p>使用驱动器 E: 中的光盘之前需要将其格式化</p></blockquote><p>查看U盘属性显示0字节，在磁盘管理器中显示为RAW格式，这种情况下大概率是文件系统损坏了。</p><p>搜罗了一些资料以后发现了下面几种可能可行的恢复方式：</p><ul><li>windows 自带的 <code>chkdsk E: /f</code> 尝试修复文件系统</li><li>使用数据恢复软件：<ul><li>Recuva：CCleaner 旗下的，有免费版和专业版，专业版190</li><li>易我数据恢复：免费版2GB限制，专业版淘宝官旗38，3天</li><li>MiniTool：免费版1GB限制，专业版69刀一个月</li><li>R-Studio：（破解版挺好找的）</li><li>DiskGenius：这个懂得都懂，硬盘方面很好用，但是数据恢复有关的功能需要会员（官方会员468，老版本破解版也许能找到）</li></ul></li></ul><p>首先因为这次的目标是先保数据，所以不考虑 <code>chkdsk</code>。</p><p>数据工具中，首先尝试了 R-Studio，结果恢复不出数据。</p><p>然后尝试了易我，易我在扫描的时候是不用开会员的，扫描完以后导出的时候需要开</p><p>最后是用易我勉强恢复了，但是有两个问题：</p><ol><li>有些文件是在文件夹里边的，恢复以后只有单独的文件了</li><li>一些多次修改的文件，可能会把多次修改保存的都恢复出来，要手工挑最新的</li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 瞎折腾 </category>
+          
+      </categories>
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>CLI-Code-Agent与Gemini CLI配置</title>
       <link href="/2025/06/26/CLI-Code-Agent/"/>
       <url>/2025/06/26/CLI-Code-Agent/</url>
