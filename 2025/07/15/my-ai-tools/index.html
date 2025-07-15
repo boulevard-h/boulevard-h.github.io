@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Boulevard H">
+
+
+
+
+
+<title>AI 工具链更新记录 | Boulevard&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon%20of%20cactus.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Boulevard&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Boulevard&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">AI 工具链更新记录</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Boulevard H</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">七月 15, 2025&nbsp;&nbsp;11:32:47</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">环境搭建</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>这篇文章开始于2025年7月，今年AI工具的发展日新月异，几乎每个月都能接触到新的模型/工具，所以谨以此文记录一下我用过的工具</p>
+<p>作为一个研究僧，我使用AI工具主要是两方面：AI coding与使用AI写本子/大作业等，当然，我也会使用AI读论文，但目前感觉想要深度理解一篇文章，还是要自己静下心来去看去写，AI只能起到一个比较细小的辅助作用，因此这不算一个主要的方面</p>
+<p>以及，本文只记录较长期（按月为单位）使用过的工具，像豆包、Qwen这种</p>
+<h2 id="1-GPT系列"><a href="#1-GPT系列" class="headerlink" title="1. GPT系列"></a>1. GPT系列</h2><p>梦开始的地方，第一次接触到是在大三下学期的GPT-3，当时用来写一些大作业/小项目代码</p>
+<p>不过因为IP+支付方式的原因，当时OpenAI官网用的不是很顺畅，所以用的是Poe平台，记得有段时间还买过淘宝上20块钱一周的号，这种应该是商家利用新号一周试用，批量用假邮箱和信用卡注册的</p>
+<p>后续很长一段时间也是用GPT为主，辅助我的毕业论文/fuzz项目，不断用过4o、o1、o1-mini一系列模型，记得第一次见到带思考功能的o1模型的时候还是很惊艳的</p>
+<h2 id="2-VSCode-Copilot"><a href="#2-VSCode-Copilot" class="headerlink" title="2. VSCode Copilot"></a>2. VSCode Copilot</h2><p>这个大概是在24年上半年接触的，相比于现在的Vibe Coding与Code Agent，当时的Copilot其实只是一个比较智能的语法补全而已，对于比较复杂的代码逻辑，还是要放到Web端的AI来写</p>
+<h2 id="3-DeepSeek-腾讯元宝"><a href="#3-DeepSeek-腾讯元宝" class="headerlink" title="3. DeepSeek/腾讯元宝"></a>3. DeepSeek/腾讯元宝</h2><p>DeepSeek的出现在国内确实是引发了轰动，虽然在解决比较复杂问题方面的能力还是不如同时间OpenAI的最新模型，但是它的价格实在是香。阿里云、硅基流动等平台都部署了自己的模型API，接入到CherryStudio中和国外基本20刀一个月的定价比起来基本等于没花钱。而后面出的腾讯元宝则是完全不收费，还带了网络搜索功能，所以也是用了很长一段时间，不过有几个比较坑的点：</p>
+<ul>
+<li>一个是众所周知的，元宝虽然不收费但是会泄露用户数据</li>
+<li>DS确实是我用过的模型里面，最啰嗦、讲话AI味最冲的模型</li>
+<li>虽然有搜索功能，但是主要来源还是微信公众号，质量一言难尽</li>
+</ul>
+<h2 id="4-Cursor"><a href="#4-Cursor" class="headerlink" title="4. Cursor"></a>4. Cursor</h2><p>这个应该是在25年1月开始接触的，用了基本有半年，确实是对AI编程的一种革新。之前对着web网页AI进行编程拷打的时候，反复复制粘贴比较麻烦不说，AI很难理解整个项目架构，很多细节人为去描述很麻烦。而Cursor这种可以自动索引和访问工作区所有代码的Agent操作起来就十分方便。</p>
+<p>不过Cursor的槽点就是玩不起，期初是20刀的Pro，每个月500条高级模型快速请求；但是后面变成了不透明的计费方式，而且明显感知越来越少和慢了，需要开通更贵的Pro Plus和Ultra模式才能够获得原先Pro就能做到的体验。</p>
+<h2 id="5-Grok-3"><a href="#5-Grok-3" class="headerlink" title="5. Grok-3"></a>5. Grok-3</h2><p>马圣的Grok-3在做一些学术调研的时候真的很棒，Grok的联网搜索模式很多数据都是来源于arxiv、Springer这些学术网站，不会出现其他AI瞎编文献的情况，堪称写综述的神</p>
+<h2 id="6-Gemini"><a href="#6-Gemini" class="headerlink" title="6. Gemini"></a>6. Gemini</h2><p>Gemini主打一个超长上下文问文件管理，印象最深刻的是把很多个几十上百页的项目本子为个Gemini，让Gemini生成一些比较简短的新本子，Gemini不仅可以完全利用这一大堆资料，还能够标注出每一段话引用自资料的哪里。而Gemini的联网搜索调研，虽然数据库没有Grok-3的那么学术化，但也算质量较高的。</p>
+<h2 id="7-Gemini-CLI"><a href="#7-Gemini-CLI" class="headerlink" title="7. Gemini-CLI"></a>7. Gemini-CLI</h2><p>书接上回Cursor玩不起以后，恰好就遇到了谷歌免费大力推广Gemini-CLI。</p>
+<p>优点：</p>
+<ul>
+<li>免费的Gemini-2.5-Pro，而且给的额度真的很高，没怎么被限制过</li>
+<li>比起Cursor，感觉持续化的工作能力更强，给一个详细任务的Prompt后会自动迭代尝试很长时间，不需要人一直看着（前提是你放心给他所有操作都自动进行无需人为许可</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>Gemini-2.5-Pro综合能力很强，但是在Coding方面还是比Claude差一些</li>
+<li>使用起来还是没有IDE built-in的Agent强，比如查看Diff就没有Cursor方便</li>
+</ul>
+<p>当然，在CLI Agent这块目前最强的还是Claude Code，但是考虑到Anthropic对IP的封号力度和价格还是不敢去充钱尝试，最近国产的Kimi-V2好像完全兼容Anthropic的API，有人折腾出了替换的方式，后面有空可以试试</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Boulevard H</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://blog.boulevard.asia/2025/07/15/my-ai-tools/">https://blog.boulevard.asia/2025/07/15/my-ai-tools/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>OvO</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2025/07/09/usb-store-data-recovery/">U盘文件系统损坏数据抢救</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Boulevard H | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
