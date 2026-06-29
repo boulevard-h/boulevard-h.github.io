@@ -240,7 +240,7 @@
 <p>右边的usb hub部分基本与该开源工程一致<a target="_blank" rel="noopener" href="https://oshwhub.com/apana/usbhub">【已验证】USB拓展坞 USB集线器 USBHub - 嘉立创EDA开源硬件平台 (oshwhub.com)</a></p>
 <p>该项目只用了SL2.1A芯片，支持四个USB 2.1输入，本项目只是在其基础上，去掉了一个USB输入，将其换成了一个FFP连接器，然后在开发板的Type-C输出也接入到另一个FFP连接器上，可以通过一根FFP软排线将左侧的开发板接入到右侧的HUB。</p>
 <h3 id="关于固件"><a href="#关于固件" class="headerlink" title="关于固件"></a>关于固件</h3><p>基础固件参考了上述苏达的教程以及<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1pt4y1a7dG/?spm_id_from=333.880.my_history.page.click">【QMK教程】从配置编译环境到实现RBG矩阵灯效 OLED屏幕动画 旋钮编码器功能 VIA改键 ARM移植的详细大教学，看完就会写QMK固件_哔哩哔哩_bilibili</a>。</p>
-<p>基础固件与之前的博客<a target="_blank" rel="noopener" href="https://blog-boulevard.top/2022/10/24/qmk-vial/">QMK编译+Vial在线改键功能 | Boulevard’s Blog (blog-boulevard.top)</a>基本类似，只是更改了主控有关。</p>
+<p>基础固件与之前的博客<a href="/2022/10/24/QMK-VIAL/">QMK编译+Vial在线改键功能</a>基本类似，只是更改了主控有关。</p>
 <h2 id="Bootloader烧录"><a href="#Bootloader烧录" class="headerlink" title="Bootloader烧录"></a>Bootloader烧录</h2><p>apm32出厂是不带dfu的，也就是说不能和Atmega32u4一样，焊接好板子以后连上USB即可使用qmk工具箱烧录。apm32和stm32都需要刷写好bootloader以后才能够用usb连接qmk工具箱烧录固件。</p>
 <h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><ol>
 <li>烧录器：支持对Arm Cortex M3设备进行SWD接口烧录的烧录器，ST-Link、CMSIS-DAP即可。我使用的是猛龙电子的CMSIS-DAP v2。</li>
@@ -272,7 +272,7 @@
 <p>打开QMK Toolbox，可以看到设备已经被识别了，后续就可以和32u4一样，用QMK工具箱烧录QMK键盘固件了：</p>
 <p><img src="/images/apm32dvlp/image-20221029165051241.png" alt="image-20221029165051241"></p>
 <h2 id="固件开发过程"><a href="#固件开发过程" class="headerlink" title="固件开发过程"></a>固件开发过程</h2><h3 id="rev0"><a href="#rev0" class="headerlink" title="rev0"></a>rev0</h3><h4 id="版本说明"><a href="#版本说明" class="headerlink" title="版本说明"></a>版本说明</h4><p>rev0是一个<strong>最基础的验证MCU电路的版本，只验证了键盘功能</strong></p>
-<p>最基础的版本参考我的博客：<a target="_blank" rel="noopener" href="https://blog-boulevard.top/2022/10/24/qmk-vial/">QMK编译+Vial在线改键功能 | Boulevard’s Blog (blog-boulevard.top)</a></p>
+<p>最基础的版本参考我的博客：<a href="/2022/10/24/QMK-VIAL/">QMK编译+Vial在线改键功能</a></p>
 <p>下面只描写apm32版本与atmega32u4版本不同的地方</p>
 <h4 id="工程结构"><a href="#工程结构" class="headerlink" title="工程结构"></a>工程结构</h4><p><img src="/images/apm32dvlp/image-20221029165533531.png" alt="image-20221029165533531"></p>
 <p>工程结构如下，对比32u4版本，只多了<code>chconf.h</code>、<code>halconf.h</code>、<code>mcuconf.h</code>三个文件，下面一一说明每个文件修改之处。</p>
@@ -287,7 +287,7 @@
 <figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># MCU name</span></span><br><span class="line">MCU = STM32F103</span><br><span class="line"></span><br><span class="line"><span class="comment"># Bootloader selection</span></span><br><span class="line">BOOTLOADER = stm32duino</span><br><span class="line"></span><br><span class="line">LTO_ENABLE = yes</span><br><span class="line">BOOTMAGIC_ENABLE ?= yes	<span class="comment"># Virtual DIP switch configuration</span></span><br><span class="line">MOUSEKEY_ENABLE ?= no	<span class="comment"># Mouse keys</span></span><br><span class="line">EXTRAKEY_ENABLE ?= yes	<span class="comment"># Audio control and System control</span></span><br><span class="line">CONSOLE_ENABLE ?= no	<span class="comment"># Console for debug</span></span><br><span class="line">COMMAND_ENABLE ?= no    <span class="comment"># Commands for debug and configuration</span></span><br><span class="line">SLEEP_LED_ENABLE ?= no  <span class="comment"># Breathing sleep LED during USB suspend</span></span><br><span class="line">NKRO_ENABLE ?= yes	    <span class="comment"># USB Nkey Rollover</span></span><br><span class="line">BACKLIGHT_ENABLE ?= no</span><br><span class="line">RGBLIGHT_ENABLE ?= no</span><br></pre></td></tr></table></figure>
 <h4 id="问题备注"><a href="#问题备注" class="headerlink" title="问题备注"></a>问题备注</h4><p>功能比较简单，没有其他问题，但是reset键不是很灵，不知道是啥原因。所以<strong>在固件中为键盘设置一个reset的组合键</strong>，方便进入BL模式刷机。</p>
 <h3 id="rev0-5"><a href="#rev0-5" class="headerlink" title="rev0.5"></a>rev0.5</h3><h4 id="版本说明-1"><a href="#版本说明-1" class="headerlink" title="版本说明"></a>版本说明</h4><p>rev0.5是一个添加了旋钮的版本，旋钮还有一些问题没有提及</p>
-<h4 id="代码内容"><a href="#代码内容" class="headerlink" title="代码内容"></a>代码内容</h4><p>这里的代码是不支持vial的，若需要vial旋钮代码，请见博客<a target="_blank" rel="noopener" href="https://blog-boulevard.top/2022/10/24/qmk-vial/">QMK编译+Vial在线改键功能 | Boulevard’s Blog (blog-boulevard.top)</a>。</p>
+<h4 id="代码内容"><a href="#代码内容" class="headerlink" title="代码内容"></a>代码内容</h4><p>这里的代码是不支持vial的，若需要vial旋钮代码，请见博客<a href="/2022/10/24/QMK-VIAL/">QMK编译+Vial在线改键功能</a>。</p>
 <p>添加旋钮需要修改如下内容</p>
 <ol>
 <li>在rules.mk中开启旋钮：</li>
